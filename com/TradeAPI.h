@@ -146,8 +146,8 @@ namespace TradeAPI
 	struct OrderReport {
 		OrderStatus ordStatus;
 		double totalQty;            //成交量
-		double avgPric;		        //成交均价
-		double leavesQty;			//剩余量
+		double avgPric;		     //成交均价
+		double leavesQty;			 //剩余量
 		ExecutionReportSeq  exec;
 		DICT extra;
 	};
@@ -273,7 +273,7 @@ namespace TradeAPI
 		//*pretrade
 		//查询金融工具
 		//filter  sql condition section
-		virtual InstrumentDetailsDict qryInstrument(const std::string &filter)=0;
+		virtual InstrumentDetailsDict qryInstruments(const std::string &mkt,const std::string &secType)=0;
 
 		//订阅变动通知
 		// events 是 EventType的组合
@@ -291,7 +291,7 @@ namespace TradeAPI
 		virtual OrderPtr newOrderSingle(const Order &ord)=0;
 
 		//撤销单个委托
-		virtual void cancelOrderSingle(const std::string &orderId)=0;
+		virtual void cancelOrderSingle(const OrderPtr &ord)=0;
 
 		//查未成交委托
 		virtual OrderSeq qryWorkingOrders(void)=0;
@@ -304,6 +304,7 @@ namespace TradeAPI
 	};
 
 	extern "C" ITradeSession *create(void);
+
 	extern "C" void destroy(ITradeSession *);
 };
 

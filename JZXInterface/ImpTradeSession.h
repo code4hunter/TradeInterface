@@ -7,7 +7,7 @@
 
 #include <TradeAPI.h>
 
-class ImpTradeSession: public TradeAPI::ITradeSession, TradeAPI::EventReceiver {
+class ImpTradeSession: public TradeAPI::ITradeSession{
 public:
     ImpTradeSession();
 
@@ -18,7 +18,7 @@ public:
 
     void stop(void);
 
-    TradeAPI::InstrumentDetailsDict qryInstrument(const std::string &filter);
+    TradeAPI::InstrumentDetailsDict qryInstruments(const std::string &mkt,const std::string &secType);
 
     void subscribeEvents(const long events, TradeAPI::ResumeType rt);
 
@@ -30,33 +30,11 @@ public:
 
     TradeAPI::OrderPtr newOrderSingle(const TradeAPI::Order &ord);
 
-    void cancelOrderSingle(const std::string &orderId);
+    void cancelOrderSingle(const TradeAPI::OrderPtr &ord);
 
     TradeAPI::OrderSeq qryWorkingOrders(void);
 
     TradeAPI::PositionInfoSeq qryPositions(const std::string &mkt);
-
-private:
-    virtual void onMessage(TradeAPI::MessageType type, const std::string &msg) override {
-
-    }
-
-    virtual void onOrderExecution(const long id, const TradeAPI::Order &order,
-                                  const TradeAPI::ExecutionReportSeq &report) override {
-
-    }
-
-    virtual void onOrderStatus(const TradeAPI::Order &order) override {
-
-    }
-
-    virtual void onFundAccountChanged(const TradeAPI::AccountInfo &info) override {
-
-    }
-
-    virtual void onPositionChanged(const TradeAPI::PositionInfo &info) override {
-
-    }
 };
 
 

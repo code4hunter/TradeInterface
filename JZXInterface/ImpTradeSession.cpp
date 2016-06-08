@@ -20,7 +20,7 @@ TradeAPI::OrderPtr ImpTradeSession::newOrderSingle(const TradeAPI::Order &ord) {
     return NULL;
 }
 
-void ImpTradeSession::cancelOrderSingle(const std::string &orderId) {
+void ImpTradeSession::cancelOrderSingle(const TradeAPI::OrderPtr &ord) {
 
 }
 
@@ -36,7 +36,7 @@ void ImpTradeSession::subscribeEvents(const long events, TradeAPI::ResumeType rt
 
 }
 
-TradeAPI::InstrumentDetailsDict ImpTradeSession::qryInstrument(const std::string &filter) {
+TradeAPI::InstrumentDetailsDict ImpTradeSession::qryInstruments(const std::string &mkt,const std::string &secType) {
     return TradeAPI::InstrumentDetailsDict();
 }
 
