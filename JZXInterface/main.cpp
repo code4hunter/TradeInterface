@@ -1,10 +1,10 @@
-#include <TradeAPI.h>
+#include "ImpTradeSession.h"
 
 using namespace std;
 using namespace TradeAPI;
 
 extern "C" ITradeSession *create(void){
-    return NULL;
+    return new ImpTradeSession();
 }
 
 extern "C" void destroy(ITradeSession * pSession) {

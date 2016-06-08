@@ -1,9 +1,10 @@
-﻿#ifndef _TRADEINTERFACEH_
-#define _TRADEINTERFACEH_
+﻿#ifndef _TRADEAPIH_
+#define _TRADEAPIH_
 
 #include <string>
 #include <map>
 #include <list>
+#include <vector>
 #include <exception>
 #include <stdexcept>
 #include <memory>
@@ -18,25 +19,27 @@
 namespace TradeAPI
 {
 	enum MessageType{
-		MsgTypeUnknown,
-		MsgTypeInfo,
-		MsgTypeWarning,
-		MsgTypeError,
-		MsgTypeEx,
+		MTUnknown,
+		MTInfo,
+		MTWarning,
+		MTError,
+		MTCommand,
 	};
 
+	typedef std::map<std::string, std::string> DICT;
 	//账户信息
 	struct AccountInfo {
-		std::string currency;           //币种  RMB,USD,HKD
-		double fund_balance;            //资金余额
+		std::string currency;            //币种  RMB,USD,HKD
+		double fundBalance;             //资金余额
 		double equity;                  //浮动权益
-		double fund_ava_for_trade;      //资金交易可用
-		double positions_market_value;  //参考持仓市值
-		double fund_ava_for_trans_out;  //资金可转出
-		std::map<std::string, std::string> extra; //其他字段
+		double fundAvaForTrade;         //资金交易可用
+		double positionsMarketValue;    //参考持仓市值
+		double fundAvaForTransout;      //资金可转出
+		DICT extra; //其他字段
 	};
 
 	struct Instrument{
+		std::string id;         //唯一ID
 		std::string symbol;     //代码
 		std::string localSymbol;//本地名称
 		std::string currency;   //币种  RMB,USD,HKD
@@ -46,10 +49,17 @@ namespace TradeAPI
 		std::string right;      //P=PUT or C=CALL
 		std::string multiplier; //乘数
 		std::string expiry;     //到期日201103
-		
-		std::string getInstId(void)
-		{
-			return secType + "." + exchange + "." + symbol;
+
+		void generate_id(void){
+			if( secType == "OPT" ){
+				id = symbol +  "." + secType + "." + exchange + "." + currency + "." + expiry + "." + right + "." + strike;
+			}
+			else if(secType == "FUT"){
+				id = symbol +  "." + secType + "." + exchange + "." + currency + "." + expiry;
+			}
+			else{
+				id = symbol +  "." + secType + "." + exchange + "." + currency;
+			}
 		}
 	};
 
@@ -71,7 +81,7 @@ namespace TradeAPI
 		}
 	};
 
-	typedef std::list<Fee> FeesSeq;
+	typedef std::vector<Fee> FeesSeq;
 
 	struct InstrumentDetails
 	{
@@ -90,38 +100,38 @@ namespace TradeAPI
 		std::string	longName;
 		std::string	timeZoneId; //时间 UCT EST
 		std::string	tradingHours;//xxxxxx:xxxxxx;xxxxxx:xxxxxx
-		std::map<std::string, std::string> extra;  //其他细节信息
+		DICT extra;  //其他细节信息
 	};
-
-	typedef std::list<InstrumentDetails> InstrumentDetailsSeq;
+	typedef std::shared_ptr<InstrumentDetails> InstrumentDetailsPtr;
+	typedef std::map<std::string, InstrumentDetailsPtr > InstrumentDetailsDict;
 
 	enum OrderStatus {
 		//以下是委托未确认状态
-		New,           //委托最初状态
-		PendingNew,    //委托已发
-		Working,       //委托在成交中(已经有成交了）
-		PendingCancel, //委托撤单请求已发
+		OSNew,           //委托最初状态
+		OSPendingNew,    //委托已发
+		OSWorking,       //委托在成交中(已经有成交了）
+		OSPendingCancel, //委托撤单请求已发
 
 		//以下是确定状态
-		Filled,        //全部成交了，委托量==成交量
-		Canceled,      //委托量==成交量+撤销量，撤销量>0
-		Stopped,       //委托已停止，成交量=0
-		Rejected,      //委托已拒绝，成交量=0
+		OSFilled,        //全部成交了，委托量==成交量
+		OSCanceled,      //委托量==成交量+撤销量，撤销量>0
+		OSStopped,       //委托已停止，成交量=0
+		OSRejected,      //委托已拒绝，成交量=0
 
 		//未决状态
-		OrdStatusUnknown
+		OSUnknown,
 	};
 
-	enum ExecType {
-		EtCanceled, //撤单回报
-		EtRejected, //拒绝回报
-		EtStopped,  //停止回报,日终停止
-		EtTrade     //成交回报
+	enum ExecutionReportType {
+		RTCanceled, //撤单回报
+		RTRejected, //拒绝回报
+		RTStopped,  //停止回报,日终停止
+		RTTrade     //成交回报
 	};
 
 	struct ExecutionReport {
 		std::string execId;       //成交编号
-		ExecType type;
+		ExecutionReportType type;
 		std::string ordRejReason;
 		double lastQty;
 		double lastPx;
@@ -129,7 +139,8 @@ namespace TradeAPI
 		int time;
 	};
 
-	typedef std::list<ExecutionReport> ExecutionReportSeq;
+	typedef std::shared_ptr<ExecutionReport> ExecutionReportPtr;
+	typedef std::list<ExecutionReportPtr> ExecutionReportSeq;
 
 	//查询委托返回的结果
 	struct OrderReport {
@@ -138,7 +149,7 @@ namespace TradeAPI
 		double avgPric;		        //成交均价
 		double leavesQty;			//剩余量
 		ExecutionReportSeq  exec;
-		std::map<std::string, std::string> extra;
+		DICT extra;
 	};
 
     struct Order {
@@ -161,17 +172,17 @@ namespace TradeAPI
 		int endDate;
 		int endTime;
 		OrderReport report;
-		std::map<std::string, std::string> extra;
+		DICT extra;
 	};
 
-	typedef std::shared_ptr<Order> ORDERPTR;
-	typedef std::list<ORDERPTR> OrderSeq;
-	typedef std::map<std::string, ORDERPTR> OrderDict;
+	typedef std::shared_ptr<Order> OrderPtr;
+	typedef std::list<OrderPtr> OrderSeq;
+	typedef std::map<std::string, OrderPtr> OrderDict;
 
 	enum PositionDirection {
-		PosDirectionUnknown,
-		DirectionLong, //多头
-		DirectionShort //空头
+		PDUnknown,
+		PDLong, //多头
+		PDShort //空头
 	};
 
 	struct PositionInfo {
@@ -189,17 +200,17 @@ namespace TradeAPI
 		double avgPrice;        //持仓均价
 		double margin;          //保证金占用
 		double mktPrice;        //当前价
-		std::map<std::string, std::string> extra;
+		DICT extra;
 	};
 
-	typedef std::shared_ptr<PositionInfo> POSITIONPTR;
-	typedef std::list<POSITIONPTR> PositionInfoSeq;
-	typedef std::map<std::string, POSITIONPTR> PositionDict;
+	typedef std::shared_ptr<PositionInfo> PositionInfoPtr;
+	typedef std::list<PositionInfoPtr> PositionInfoSeq;
+	typedef std::map<std::string, PositionInfoPtr> PositionDict;
 	
 	enum ResumeType {
-		Restart, //从本交易日开始重传
-		Resume,  //从指定的消息ID续传
-		Quick    //只传送请求后的内容
+		RTRestart, //从本交易日开始重传
+		RTResume,  //从指定的消息ID续传
+		RTQuick    //只传送请求后的内容
 	};
 
 	//API Error,此接口API触发的错误，比如API参数输入不准确
@@ -248,6 +259,7 @@ namespace TradeAPI
 	};
 	
 	class ITradeSession {
+	public:
 		//启动会话
 		virtual void start(
 						   const std::string &sessionName,
@@ -261,7 +273,7 @@ namespace TradeAPI
 		//*pretrade
 		//查询金融工具
 		//filter  sql condition section
-		virtual InstrumentDetailsSeq qryInstrument(const std::string &filter)=0;
+		virtual InstrumentDetailsDict qryInstrument(const std::string &filter)=0;
 
 		//订阅变动通知
 		// events 是 EventType的组合
@@ -273,10 +285,10 @@ namespace TradeAPI
 		//seqId为续传的id，只有当ResumeType == Resume时生效
 		virtual void reqExecReport( const ResumeType type, const std::string &seqId)=0;
 
-		virtual void cancelExeReport(void);
+		virtual void cancelExeReport(void)=0;
 
 		//单个委托，返回委托
-		virtual ORDERPTR newOrderSingle(const Order &ord)=0;
+		virtual OrderPtr newOrderSingle(const Order &ord)=0;
 
 		//撤销单个委托
 		virtual void cancelOrderSingle(const std::string &orderId)=0;
@@ -287,6 +299,8 @@ namespace TradeAPI
 		//*posttrade
 		//查持仓信息,输入MktUnknown查全部市场
 		virtual PositionInfoSeq qryPositions(const std::string &mkt)=0;
+
+		virtual ~ITradeSession(){};
 	};
 
 	extern "C" ITradeSession *create(void);
