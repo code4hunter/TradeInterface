@@ -33,10 +33,10 @@ int main(int argc, char* argv[]){
         KCBPCLI_Exit(handle);
     }
     boost::property_tree::ptree pt;
-    boost::property_tree::xml_parser::read_xml("ZJXInterface.xml", pt);
-    int a = pt.get<int>( "session1.StartTime");
-    int b = pt.get<int>( "session1.EndTime");
+    boost::property_tree::xml_parser::read_xml("F:\\TradeInterface\\JZXInterface\\JZXInterface.xml", pt);
+    int b = pt.get( "session1.EndTime",0);
+    int a = pt.get( "session1.StartTime",0);
 
-    cout << "Hello, World!" << file_size(argv[1]) << " " << a << " " << b << endl;
+    std::cout << a << std::endl;
     return 0;
 }
