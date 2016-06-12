@@ -257,7 +257,9 @@ namespace TradeAPI
 		//持仓发生变动时触发
 		virtual void onPositionChanged( const PositionInfo &info) = 0;
 	};
-	
+
+	typedef std::shared_ptr<EventReceiver> EventReceiverPtr;
+
 	class ITradeSession {
 	public:
 		//启动会话
@@ -265,7 +267,7 @@ namespace TradeAPI
 						   const std::string &sessionName,
 						   const std::string &account,
 						   const std::string &accPassword,
-						   EventReceiver * receiver)=0;
+						   EventReceiverPtr &receiver)=0;
 
 		//停止会话
 		virtual void stop(void)=0;
