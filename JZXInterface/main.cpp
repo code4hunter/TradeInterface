@@ -32,11 +32,14 @@ int main(int argc, char* argv[]){
         std::cout << version << std::endl;
         KCBPCLI_Exit(handle);
     }
-    boost::property_tree::ptree pt;
-    boost::property_tree::xml_parser::read_xml("F:\\TradeInterface\\JZXInterface\\JZXInterface.xml", pt);
-    int b = pt.get( "session1.EndTime",0);
-    int a = pt.get( "session1.StartTime",0);
+    boost::filesystem::path xmlfile(boost::filesystem::initial_path().append("JZXInterface.xml"));
+    if(boost::filesystem::exists(xmlfile)) {
+        boost::property_tree::ptree pt;
+        boost::property_tree::xml_parser::read_xml(xmlfile.string(), pt);
+        int b = pt.get("session1.EndTime1", 0);
+        int a = pt.get("session1.StartTime", 0);
 
-    std::cout << a << std::endl;
+        std::cout << a << std::endl;
+    }
     return 0;
 }

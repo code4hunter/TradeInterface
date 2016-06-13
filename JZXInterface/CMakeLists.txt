@@ -2,10 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 project(JZXInterface)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(SOURCE_FILES main.cpp ImpTradeSession.cpp ImpTradeSession.h ../com/TradeAPI.h encode_dll_wrapper.cpp)
+set(SOURCE_FILES main.cpp ImpTradeSession.cpp ImpTradeSession.h encode_dll_wrapper.cpp ../com/time_utlity.cpp)
 add_library(JZXInterface SHARED ${SOURCE_FILES})
 
-set(Boost_INCLUDE_DIR F:\\lib\\boost_1_61_0)
+find_path(Boost_cfg NAMES project-config.jam PATHS F:\\lib\\boost_1_61_0 D:\\lib\\boost_1_61_0)
+set(Boost_INCLUDE_DIR ${Boost_cfg})
 
 find_package(Boost COMPONENTS system thread log_setup log date_time filesystem chrono)
 IF (Boost_FOUND)

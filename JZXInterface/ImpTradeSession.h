@@ -61,6 +61,8 @@ private:
     int _timeout;
     int _encryptType;
 
+    bool _is_login;
+
     std::shared_ptr<std::thread> _worker;
     void raise_api_error(const std::string &sender);
 

@@ -8,11 +8,8 @@
 #心跳间隔多少秒
 <HeartBtInt>30</HeartBtInt>
 
-<TraderName></TraderName>
-<TraderPassword></TraderPassword>
-
 #多少个交易员线程
-<NumOfTraders></NumOfTraders>
+<NumOfTraders>2</NumOfTraders>
 
 #JZX system params
 <szServerName></szServerName>
