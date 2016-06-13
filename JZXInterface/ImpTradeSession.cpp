@@ -36,6 +36,7 @@ ImpTradeSession::~ImpTradeSession() {
 void ImpTradeSession::stop(void) {
     if(_worker == NULL) throw TradeAPI::api_issue_error("Session is not exists.");
     _worker_running = false;
+    _cv.notify_all();
     _worker->join();
     _worker.reset();
     _event_receiver.reset();
@@ -85,10 +86,30 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
 
 void ImpTradeSession::worker_procedure(void) {
     std::cout << "-> worker_procedure startup." << std::endl;
-    while(_worker_running){
-        int day,tm;
-        get_current_dt(day,tm);
 
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lck(mtx);
+    while(_worker_running){
+        if(_cv.wait_for(lck,std::chrono::seconds(2))==std::cv_status::timeout) {
+            int day, tm;
+            get_current_dt(day, tm);
+            if (tm >= this->_startTime && tm < this->_endTime) {
+                if (!this->_is_login) {
+                    this->login();
+                }
+                else {
+                    // check _heartBtInt
+                }
+            }
+            else {
+                if (this->_is_login) {
+                    this->logout();
+                }
+            }
+        }
+        else{
+            //执行命令
+        }
     }
     std::cout << "-> worker_procedure stopped." << std::endl;
 }
@@ -135,13 +156,26 @@ void ImpTradeSession::raise_api_error(const std::string &sender) {
     char *errMsg= NULL;
     std::ostringstream os;
     if( 0 == KCBPCLI_GetErr(_handle,&errCode,errMsg)){
-        os << "HANDLE:" << _handle << " FUNCTION:" << sender << " CODE:" << errCode << " MSG:" << ((errMsg==NULL)?"":errMsg);
+        os << "HANDLE:" << _handle << " FUNCTION:" << sender << " CODE:" << errCode
+            << " MSG:" << ((errMsg==NULL)?"":errMsg);
     }
     else{
         os << "HANDLE:" << _handle << " FUNCTION:" << sender << " KCBPCLI_GetErr failed!";
     }
     throw TradeAPI::api_issue_error(os.str());
 }
+
+void ImpTradeSession::login(void) {
+
+}
+
+void ImpTradeSession::logout(void) {
+
+}
+
+
+
+
 
 
 

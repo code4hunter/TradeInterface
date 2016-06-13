@@ -9,6 +9,7 @@
 #include "KCBPCli.h"
 
 #include <thread>
+#include <c++/condition_variable>
 
 class ImpTradeSession: public TradeAPI::ITradeSession{
 public:
@@ -62,7 +63,10 @@ private:
     int _encryptType;
 
     bool _is_login;
+    void login(void);
+    void logout(void);
 
+    std::condition_variable _cv;
     std::shared_ptr<std::thread> _worker;
     void raise_api_error(const std::string &sender);
 
