@@ -1,13 +1,9 @@
-//---------------------------------------------------------------------------
-
-#ifndef uFieldH
-#define uFieldH
+#ifndef _record_set_h_
+#define _record_set_h_
 
 #include <map>
 #include <string>
 #include <vector>
-
-//---------------------------------------------------------------------------
 
 class record_set
 {
@@ -43,6 +39,12 @@ public:
         _values.resize(nrow*ncol);
     }
 
+	void clear(void){
+		_fieldNames.clear();
+		_fields.clear();
+		_values.clear();
+	}
+
 	size_t get_column_size(void)
 	{
 		return _col;
@@ -60,7 +62,6 @@ public:
 		{
             size_t idx = _fieldNames.size();
             _fieldNames.insert(std::pair<std::string,size_t>(name,idx));
-            //_fieldNames[name] = idx;
 			_fields.push_back(name);
             return idx ;
 		}
@@ -134,6 +135,5 @@ public:
 	std::string get_text(void);
 	size_t set_text(const std::string &text,size_t pos=0);
 };
-
 
 #endif

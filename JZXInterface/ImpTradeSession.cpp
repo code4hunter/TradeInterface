@@ -176,8 +176,11 @@ void ImpTradeSession::login(void) {
         KCBPCLI_SetValue(handle, "inputtype", "N");//登录类型	inputtype	char(1)	Y	见备注
         KCBPCLI_SetValue(handle, "inputid", (char*)_account.c_str());//登录标识	inputid	char(64)	Y	见备注
         // execute request
-        exec_request(handle,program);
+        record_set result;
+        exec_request(handle,program,result);
         disconnect_gateway(handle);
+        // process answer
+        result.get_field_value("");
     }
 }
 
@@ -266,7 +269,7 @@ void ImpTradeSession::disconnect_gateway(KCBPCLIHANDLE handle) {
     KCBPCLI_Exit( handle );
 }
 
-void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &program) {
+void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &program, record_set &records) {
     int ret;
     if((ret=KCBPCLI_SQLExecute(handle, (char*)program.c_str()))!=0) {
         disconnect_gateway(handle);
@@ -311,17 +314,26 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
     if( KCBPCLI_SQLMoreResults(handle) == 0 )
     {
         int nCol;
+        int nRow;
         KCBPCLI_RsGetColNum(handle, &nCol);
+        KCBPCLI_RsGetRowNum(handle, &nRow);
+        record_set rs(nCol,nRow);
+
+        int iRow = 1;
         while( !KCBPCLI_RsFetchRow(handle) )
         {
             for( int i = 1; i <= nCol; i++ )
             {
-                KCBPCLI_RsGetColName( handle, i, tmpbuf, sizeof(tmpbuf) );
-                printf( "%s", tmpbuf );
-                KCBPCLI_RsGetColByName( handle, tmpbuf, tmpbuf );
-                printf( " = %s\n", tmpbuf );
+                if( iRow == 1) {
+                    char colName[512];
+                    KCBPCLI_RsGetColName(handle, i, colName, sizeof(colName));
+                    rs.add_field_name(colName);
+                }
+                char value[512];
+                KCBPCLI_RsGetCol( handle, i, value );
+                rs.set_field_value(i-1,value,iRow);
             }
-            printf( "\n" );
+            iRow++;
         }
     }
 

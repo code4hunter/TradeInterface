@@ -83,8 +83,8 @@ public:
             //第一次登录是登录请求号
             //以后的登录就是客户号
             if (KEncodeFun != NULL) {
-                KEncodeFun(KDCOMPLEX_ENCODE, (unsigned char *) pSrc, strlen(pSrc), (unsigned char *) pDst, 21, key,
-                           strlen(key));
+                KEncodeFun(KDCOMPLEX_ENCODE, (unsigned char *) pSrc, strlen(pSrc), (unsigned char *) pDst, 21,
+                           (char*)key, strlen(key));
             }
             else return -1;
         }

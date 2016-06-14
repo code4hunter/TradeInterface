@@ -5,8 +5,9 @@
 #ifndef JZXINTERFACE_IMPTRADESESSION_H
 #define JZXINTERFACE_IMPTRADESESSION_H
 
-#include "../com/TradeAPI.h"
 #include "KCBPCli.h"
+#include "../com/TradeAPI.h"
+#include "../com/record_set.h"
 
 #include <thread>
 #include <c++/condition_variable>
@@ -72,7 +73,7 @@ private:
 
     KCBPCLIHANDLE connect_gateway(void);
     void int_request(KCBPCLIHANDLE handle, const std::string &funcId);
-    void exec_request(KCBPCLIHANDLE handle, const std::string &program);
+    void exec_request(KCBPCLIHANDLE handle, const std::string &program, record_set &records);
     void disconnect_gateway(KCBPCLIHANDLE handle);
     void login(void);
     void logout(void);

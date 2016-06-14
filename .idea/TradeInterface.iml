@@ -9,7 +9,9 @@
       <sourceFolder url="file://$MODULE_DIR$/JZXInterface/CMakeLists.txt" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/JZXInterface/encode_dll_wrapper.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/record_set.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com/time_utlity.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/record_set.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com/time_utlity.h" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
@@ -19,13 +21,13 @@
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed" />
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/lib/gcc/i686-w64-mingw32/5.3.0/include" />
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/i686-w64-mingw32/include" />
-          <root url="file://D:/lib/boost_1_61_0" />
+          <root url="file://F:/lib/boost_1_61_0" />
         </CLASSES>
         <SOURCES>
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/lib/gcc/i686-w64-mingw32/5.3.0/include-fixed" />
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/lib/gcc/i686-w64-mingw32/5.3.0/include" />
           <root url="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/i686-w64-mingw32/include" />
-          <root url="file://D:/lib/boost_1_61_0" />
+          <root url="file://F:/lib/boost_1_61_0" />
         </SOURCES>
       </library>
     </orderEntry>
