@@ -1,32 +1,38 @@
 ﻿<session1>
-#自动登陆时间
-<StartTime>90000</StartTime>
-#自动登出时间
-<EndTime>163000</EndTime>
-#存储文件路径
-<StorePath>./session</StorePath>
-#心跳间隔多少秒
-<HeartBtInt>30</HeartBtInt>
+    #自动登陆时间
+    <StartTime>90000</StartTime>
+    #自动登出时间
+    <EndTime>163000</EndTime>
+    #存储文件路径
+    <StorePath>./session</StorePath>
+    #心跳间隔多少秒
+    <HeartBtInt>30</HeartBtInt>
 
-#多少个交易员线程
-<NumOfTraders>2</NumOfTraders>
+    #多少个交易员线程
+    <NumOfTraders>2</NumOfTraders>
 
-#JZX system params
-<szServerName></szServerName>
-<nProtocol></nProtocol>
-<szAddress></szAddress>
-<nPort></nPort>
-<szSendQName></szSendQName>
-<szReceiveQName></szReceiveQName>
-<szReserved></szReserved>
-<Timeout></Timeout>
+    #JZX system params
+    <szServerName>RDC-ZHANGZ</szServerName>
+    <nProtocol>0</nProtocol>
+    <szAddress>114.141.166.21</szAddress>
+    <nPort>21000</nPort>
+    <szSendQName>req_zb</szSendQName>
+    <szReceiveQName>ans_zb</szReceiveQName>
+    <szReserved>0</szReserved>
+    <Timeout>5</Timeout>
+    <UserName>KCXP00</UserName>
+    <Password>888888</Password>
 
-#密码加密方式
-<EncryptType>0</EncryptType>
-#JZX其他参数
-<DptCode></DptCode>
-<Operway></Operway>
-<SHA>0</SHA>
-<SZA>1</SZA>
-<MAC></MAC>
+    #密码加密方式
+    <EncryptType>0</EncryptType>
+    #JZX其他参数
+    //营业部代码
+    <orgid>2100</orgid>
+    //操作委托方式
+    <operway>6</operway>
+    //操作站点
+    <netaddr>010.124.037.091D89D671A5DC5Xeon(R)CPUE5-2665WIN-IMRS4S3ALMFxxxhollynoob</netaddr>
+    <SHA>1</SHA>
+    <SZA>2</SZA>
+
 </session1>

@@ -70,7 +70,7 @@ public:
         }
     }
 
-    int Encrypt(char *pSrc, char *pDst, char *key, int encryptType) {
+    int Encrypt(const char *pSrc, char *pDst, const char *key, int encryptType) {
         std::unique_lock<std::mutex> lock(_mutex);
         if (encryptType == 0) {
             if (DEncodeFun != NULL) {

@@ -41,7 +41,6 @@ public:
     TradeAPI::PositionInfoSeq qryPositions(const std::string &mkt);
 
 private:
-    KCBPCLIHANDLE _handle;  //hcxp handle
     bool _worker_running;
     TradeAPI::EventReceiverPtr _event_receiver;
     std::string _sessionName ;
@@ -61,15 +60,27 @@ private:
     std::string _szReserved;
     int _timeout;
     int _encryptType;
+    std::string _orgid;
+    std::string _operway;
+    std::string _netaddr;
+    std::string _username;
+    std::string _password;
 
     bool _is_login;
+    std::string _encode_password;
+    std::string _cust_id;
+
+    KCBPCLIHANDLE connect_gateway(void);
+    void int_request(KCBPCLIHANDLE handle, const std::string &funcId);
+    void exec_request(KCBPCLIHANDLE handle, const std::string &program);
+    void disconnect_gateway(KCBPCLIHANDLE handle);
     void login(void);
     void logout(void);
 
     std::condition_variable _cv;
     std::shared_ptr<std::thread> _worker;
-    void raise_api_error(const std::string &sender);
-
+    void raise_api_error(const std::string &sender,KCBPCLIHANDLE handle, int code);
+    void raise_api_remote_error(const std::string &sender,KCBPCLIHANDLE handle);
     void worker_procedure(void);
 };
 
