@@ -70,6 +70,7 @@ private:
     bool _is_login;
     std::string _encode_password;
     std::string _cust_id;
+    int _last_exec_time;
 
     KCBPCLIHANDLE connect_gateway(void);
     void int_request(KCBPCLIHANDLE handle, const std::string &funcId);

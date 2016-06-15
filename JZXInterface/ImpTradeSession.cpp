@@ -4,31 +4,34 @@
 
 #include "ImpTradeSession.h"
 #include "../com/time_utlity.h"
-#include "KCBPCli.h"
 #include "encode_dll_wrapper.h"
 
-#include <c++/iostream>
 #include <c++/sstream>
 #include <boost/property_tree/ptree.hpp>
-#include <boost/property_tree/ini_parser.hpp>
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/property_tree/xml_parser.hpp>
 
 ImpTradeSession::ImpTradeSession() : _worker_running(false),_startTime(83000),_endTime(153000),
                                      _heartBtInt(30),_numOfTraders(1),_nProtocol(0),_nPort(0),_timeout(0),
-                                     _encryptType(0),_is_login(false){
+                                     _encryptType(0),_is_login(false),_last_exec_time(0){
 }
 
 ImpTradeSession::~ImpTradeSession() {
+    stop();
 }
 
 void ImpTradeSession::stop(void) {
-    if(_worker == NULL) throw TradeAPI::api_issue_error("Session is not exists.");
-    _worker_running = false;
-    _cv.notify_all();
-    _worker->join();
-    _worker.reset();
-    _event_receiver.reset();
+    if(_worker != NULL) {
+        _worker_running = false;
+        _cv.notify_all();
+        _worker->join();
+        _worker.reset();
+    }
+
+    if(_event_receiver) {
+        _event_receiver.reset();
+    }
 }
 
 void ImpTradeSession::start(const std::string &sessionName, const std::string &account, const std::string &accPassword,
@@ -42,7 +45,7 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
         namespace pt = boost::property_tree;
         pt::ptree tree;
         try {
-            pt::read_ini(xmlfile.string(), tree);
+            pt::read_xml(xmlfile.string(), tree);
             _startTime = tree.get(sessionName + ".StartTime", _startTime);
             _endTime = tree.get(sessionName + ".EndTime", _endTime);
             _storePath = tree.get<std::string>(sessionName + ".StorePath");
@@ -83,25 +86,36 @@ void ImpTradeSession::worker_procedure(void) {
     std::mutex mtx;
     std::unique_lock<std::mutex> lck(mtx);
     while(_worker_running){
-        if(_cv.wait_for(lck,std::chrono::seconds(2))==std::cv_status::timeout) {
-            int day, tm;
-            get_current_dt(day, tm);
-            if (tm >= this->_startTime && tm < this->_endTime) {
-                if (!this->_is_login) {
-                    this->login();
+        try {
+            if (_cv.wait_for(lck, std::chrono::seconds(2)) == std::cv_status::timeout) {
+                int day, tm;
+                get_current_dt(day, tm);
+                if (tm >= this->_startTime && tm < this->_endTime) {
+                    if (!this->_is_login) {
+                        this->login();
+                        this->_is_login = true;
+                    }
+                    else {
+                        // check _heartBtInt
+                        if (_last_exec_time > tm) _last_exec_time = tm;
+                        if (second_between_time(_last_exec_time, tm) >= _heartBtInt) {
+                            //调用心跳
+                        }
+                    }
                 }
                 else {
-                    // check _heartBtInt
+                    if (this->_is_login) {
+                        this->_is_login = false;
+                        this->logout();
+                    }
                 }
             }
             else {
-                if (this->_is_login) {
-                    this->logout();
-                }
+                //执行命令
             }
         }
-        else{
-            //执行命令
+        catch(std::exception &e){
+            std::cout << e.what() << std::endl;
         }
     }
     std::cout << "-> worker_procedure stopped." << std::endl;
@@ -168,20 +182,23 @@ void ImpTradeSession::raise_api_remote_error(const std::string &sender, KCBPCLIH
 }
 
 void ImpTradeSession::login(void) {
-    if( _is_login == false ){
-        std::string program = "410301";
-        KCBPCLIHANDLE handle = connect_gateway();
-        int_request(handle,program);
-        // set funciton request parameter
-        KCBPCLI_SetValue(handle, "inputtype", "N");//登录类型	inputtype	char(1)	Y	见备注
-        KCBPCLI_SetValue(handle, "inputid", (char*)_account.c_str());//登录标识	inputid	char(64)	Y	见备注
-        // execute request
-        record_set result;
-        exec_request(handle,program,result);
-        disconnect_gateway(handle);
-        // process answer
-        result.get_field_value("");
-    }
+    std::string program = "410301";
+    KCBPCLIHANDLE handle = connect_gateway();
+    int_request(handle,program);
+    // set funciton request parameter
+    KCBPCLI_SetValue(handle, "inputtype", "N");//登录类型	inputtype	char(1)	Y	见备注
+    KCBPCLI_SetValue(handle, "inputid", (char*)_account.c_str());//登录标识	inputid	char(64)	Y	见备注
+    // execute request
+    record_set result;
+    exec_request(handle,program,result);
+    disconnect_gateway(handle);
+    // process answer
+    result.show_data();
+    _cust_id = result.get_field_value("custid");
+    char enpassword[255];
+    memset(enpassword,0,255);
+    encode_dll_wrapper::instance()->Encrypt(_accountPassword.c_str(),enpassword,_cust_id.c_str(),_encryptType);
+    _encode_password.assign(enpassword);
 }
 
 void ImpTradeSession::logout(void) {
@@ -197,8 +214,7 @@ void ImpTradeSession:: int_request(KCBPCLIHANDLE handle, const std::string &func
         this->raise_api_error("KCBPCLI_BeginWrite",handle,ret);
     }
 
-    if(funcId=="410301")
-    {
+    if(funcId=="410301") {
         KCBPCLI_SetValue(handle, "funcid", (char*)funcId.c_str());//功能号, 必须送,不可以为空
         KCBPCLI_SetValue(handle, "custid", "");//客户代码,  可以为空 28014444,8237964
         KCBPCLI_SetValue(handle, "custorgid", (char*)_orgid.c_str());//客户机构, 可以为空
@@ -206,18 +222,17 @@ void ImpTradeSession:: int_request(KCBPCLIHANDLE handle, const std::string &func
         memset(enpassword,0,255);
         encode_dll_wrapper::instance()->Encrypt(_accountPassword.c_str(),enpassword,funcId.c_str(),_encryptType);
         KCBPCLI_SetValue(handle, "trdpwd", enpassword);//交易密码, 可以为空
-        KCBPCLI_SetValue(handle, "netaddr", (char*)_netaddr.c_str());//FGTJASet.ServerAddr);//操作站点, 必须送，不可以为空
+        KCBPCLI_SetValue(handle, "netaddr", (char*)_netaddr.c_str());//操作站点, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "orgid", (char*)_orgid.c_str());//操作机构, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "operway", (char*)_operway.c_str()/*"0"*/);//操作方式, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "ext", "");//扩展字段, 必须送，可以为空
     }
-    else
-    {
+    else {
         KCBPCLI_SetValue(handle, "funcid", (char*)funcId.c_str());//功能号, 必须送,不可以为空
         KCBPCLI_SetValue(handle, "custid", (char*)_cust_id.c_str());//客户代码,  可以为空119353,517486
         KCBPCLI_SetValue(handle, "custorgid", (char*)_orgid.c_str());//客户机构, 可以为空
         KCBPCLI_SetValue(handle, "trdpwd", (char*)_encode_password.c_str());//交易密码, 可以为空
-        KCBPCLI_SetValue(handle, "netaddr", (char*)_netaddr.c_str());//FGTJASet.ServerAddr);//操作站点, 必须送，不可以为空
+        KCBPCLI_SetValue(handle, "netaddr", (char*)_netaddr.c_str());//操作站点, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "orgid", (char*)_orgid.c_str());//操作机构, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "operway", (char*)_operway.c_str());//操作方式, 必须送，不可以为空
         KCBPCLI_SetValue(handle, "ext", "");//扩展字段, 必须送，可以为空
@@ -275,6 +290,9 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
         disconnect_gateway(handle);
         this->raise_api_error("KCBPCLI_SQLExecute", handle, ret);
     }
+    int day, tm;
+    get_current_dt(day, tm);
+    _last_exec_time = tm;
 
     int errCode;
     KCBPCLI_GetErrorCode(handle, &errCode);

@@ -15,9 +15,9 @@
     <szServerName>RDC-ZHANGZ</szServerName>
     <nProtocol>0</nProtocol>
     <szAddress>114.141.166.21</szAddress>
-    <nPort>21000</nPort>
-    <szSendQName>req_zb</szSendQName>
-    <szReceiveQName>ans_zb</szReceiveQName>
+    <nPort>18002</nPort>
+    <szSendQName>req1</szSendQName>
+    <szReceiveQName>ans1</szReceiveQName>
     <szReserved>0</szReserved>
     <Timeout>5</Timeout>
     <UserName>KCXP00</UserName>

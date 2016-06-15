@@ -1,5 +1,6 @@
 #include "record_set.h"
 #include <sstream>
+#include <c++/iomanip>
 
 std::string record_set::get_text(void) {
     std::ostringstream text;
@@ -81,4 +82,29 @@ size_t record_set::set_text(const std::string &text, size_t pos) {
     }
 
     return pos;
+}
+
+void record_set::show_data(void) {
+    //compute max item size
+    size_t maxLen = 0;
+    for(FIELDNAME::const_iterator it= _fieldNames.begin();it!= _fieldNames.end(); ++it){
+        maxLen = std::max(it->first.size(),maxLen);
+        for(size_t i=1;i<= this->get_row_size() ;i++) {
+            std::string v = this->get_field_value(it->second, i);
+            maxLen = std::max(v.size(),maxLen);
+        }
+    }
+    // Title
+    for(FIELDNAME::const_iterator it= _fieldNames.begin();it!= _fieldNames.end(); ++it){
+        std::cout << std::setw(maxLen+1) << it->first << "|";
+    }
+    std::cout << std::endl;
+    // Value
+    for(size_t i=1;i<= this->get_row_size() ;i++) {
+        for(FIELDNAME::const_iterator it= _fieldNames.begin();it!= _fieldNames.end(); ++it){
+            std::string v = this->get_field_value(it->second, i);
+            std::cout << std::setw(maxLen+1) << v << "|";
+        }
+        std::cout << std::endl;
+    }
 }

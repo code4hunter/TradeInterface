@@ -14,17 +14,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="fc5db796-6b6b-4be7-a99c-34aa932e153e" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/com/record_set.cpp" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/com/uField.cpp" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/TradeInterface.iml" afterPath="$PROJECT_DIR$/.idea/TradeInterface.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/encodings.xml" afterPath="$PROJECT_DIR$/.idea/encodings.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/CMakeLists.txt" afterPath="$PROJECT_DIR$/JZXInterface/CMakeLists.txt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp" afterPath="$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/ImpTradeSession.h" afterPath="$PROJECT_DIR$/JZXInterface/ImpTradeSession.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/KCBPCli.h" afterPath="$PROJECT_DIR$/JZXInterface/KCBPCli.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h" afterPath="$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/com/uField.h" afterPath="$PROJECT_DIR$/com/record_set.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/JZXInterface.xml" afterPath="$PROJECT_DIR$/JZXInterface/JZXInterface.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/JZXInterface/main.cpp" afterPath="$PROJECT_DIR$/JZXInterface/main.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/TradeAPI.h" afterPath="$PROJECT_DIR$/com/TradeAPI.h" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/record_set.cpp" afterPath="$PROJECT_DIR$/com/record_set.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/com/record_set.h" afterPath="$PROJECT_DIR$/com/record_set.h" />
     </list>
     <ignored path="TradeInterface.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -45,11 +43,21 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="TradeAPI.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/com/TradeAPI.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="534">
+              <caret line="256" column="59" selection-start-line="256" selection-start-column="43" selection-end-line="256" selection-end-column="59" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="ImpTradeSession.cpp" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="301">
-              <caret line="182" column="35" selection-start-line="182" selection-start-column="35" selection-end-line="182" selection-end-column="35" />
+            <state relative-caret-position="604">
+              <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
               <folding>
                 <element signature="e#38#66#0" expanded="true" />
               </folding>
@@ -57,35 +65,23 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="encode_dll_wrapper.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h">
+      <file leaf-file-name="main.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/JZXInterface/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="358">
-              <caret line="86" column="39" selection-start-line="86" selection-start-column="39" selection-end-line="86" selection-end-column="39" />
+            <state relative-caret-position="446">
+              <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="record_set.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/record_set.h">
+      <file leaf-file-name="ImpTradeSession.h" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="173">
-              <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
+            <state relative-caret-position="325">
+              <caret line="72" column="23" selection-start-line="72" selection-start-column="8" selection-end-line="72" selection-end-column="23" />
               <folding>
-                <element signature="e#47#61#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="record_set.cpp" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/com/record_set.cpp">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-807">
-              <caret line="9" column="23" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="23" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
+                <element signature="e#117#137#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -101,23 +97,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ImpTradeSession.h" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="361">
-              <caret line="75" column="70" selection-start-line="75" selection-start-column="70" selection-end-line="75" selection-end-column="91" />
-              <folding>
-                <element signature="e#117#137#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="JZXInterface.xml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/JZXInterface/JZXInterface.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="437">
-              <caret line="23" column="13" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="13" />
+            <state relative-caret-position="0">
+              <caret line="0" column="9" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -132,14 +116,17 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
-        <option value="$PROJECT_DIR$/JZXInterface/JZXInterface.xml" />
         <option value="$PROJECT_DIR$/JZXInterface/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/com/uField.h" />
         <option value="$PROJECT_DIR$/com/uField.cpp" />
-        <option value="$PROJECT_DIR$/JZXInterface/ImpTradeSession.h" />
-        <option value="$PROJECT_DIR$/com/record_set.h" />
         <option value="$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h" />
         <option value="$PROJECT_DIR$/JZXInterface/KCBPCli.h" />
+        <option value="$PROJECT_DIR$/com/record_set.h" />
+        <option value="$PROJECT_DIR$/com/record_set.cpp" />
+        <option value="$PROJECT_DIR$/JZXInterface/ImpTradeSession.h" />
+        <option value="$PROJECT_DIR$/JZXInterface/JZXInterface.xml" />
+        <option value="$PROJECT_DIR$/com/TradeAPI.h" />
+        <option value="$PROJECT_DIR$/JZXInterface/main.cpp" />
         <option value="$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp" />
       </list>
     </option>
@@ -151,10 +138,10 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1456" />
-    <option name="height" value="876" />
+    <option name="x" value="282" />
+    <option name="y" value="2" />
+    <option name="width" value="1298" />
+    <option name="height" value="1016" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="false">
     <OptionsSetting value="true" id="Add" />
@@ -236,7 +223,7 @@
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="WebServerToolWindowFactoryState" value="false" />
   </component>
-  <component name="RunManager" selected="Application.Build All">
+  <component name="RunManager" selected="Application.testJZXInterface">
     <configuration default="true" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" PASS_PARENT_ENVS_2="true" PROJECT_NAME="JZXInterface" TARGET_NAME="JZXInterface" CONFIG_NAME="Debug" TEST_MODE="SUITE_TEST">
       <envs />
       <method />
@@ -398,10 +385,6 @@
       <option name="USE_KEYWORD" value="false" />
       <method />
     </configuration>
-    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
-      <envs />
-      <method />
-    </configuration>
     <configuration default="false" name="TradeInterface" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TradeInterface" TARGET_NAME="TradeInterface" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TradeInterface" RUN_TARGET_NAME="TradeInterface">
       <envs />
       <method />
@@ -410,14 +393,18 @@
       <envs />
       <method />
     </configuration>
-    <configuration default="false" name="testJZXInterface" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="JZXInterface" TARGET_NAME="testJZXInterface" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="JZXInterface" RUN_TARGET_NAME="testJZXInterface">
+    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="" PASS_PARENT_ENVS_2="true" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TradeInterface" RUN_TARGET_NAME="testJZXInterface" EXPLICIT_BUILD_TARGET_NAME="all">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="testJZXInterface" type="CMakeRunConfiguration" factoryName="Application" WORKING_DIR="" PASS_PARENT_ENVS_2="true" PROJECT_NAME="TradeInterface" TARGET_NAME="testJZXInterface" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="TradeInterface" RUN_TARGET_NAME="testJZXInterface">
       <envs />
       <method />
     </configuration>
     <list size="4">
-      <item index="0" class="java.lang.String" itemvalue="Application.Build All" />
-      <item index="1" class="java.lang.String" itemvalue="Application.TradeInterface" />
-      <item index="2" class="java.lang.String" itemvalue="Application.JZXInterface" />
+      <item index="0" class="java.lang.String" itemvalue="Application.TradeInterface" />
+      <item index="1" class="java.lang.String" itemvalue="Application.JZXInterface" />
+      <item index="2" class="java.lang.String" itemvalue="Application.Build All" />
       <item index="3" class="java.lang.String" itemvalue="Application.testJZXInterface" />
     </list>
   </component>
@@ -460,20 +447,20 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1456" height="876" extended-state="6" />
-    <editor active="false" />
+    <frame x="282" y="2" width="1298" height="1016" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20555556" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2051482" sideWeight="0.5" order="1" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2513021" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2092511" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32934782" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.40234375" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.40184453" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.30396476" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.2907489" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -505,12 +492,81 @@
           <url>file://$PROJECT_DIR$/JZXInterface/KCBPCli.h</url>
           <line>71</line>
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/JZXInterface/main.cpp</url>
+          <line>62</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="1" />
+      <option name="time" value="15" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#38#66#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1634">
+          <caret line="86" column="39" selection-start-line="86" selection-start-column="39" selection-end-line="86" selection-end-column="39" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/record_set.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1843">
+          <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
+          <folding>
+            <element signature="e#47#61#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/record_set.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="9" column="23" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#23#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/KCBPCli.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3477">
+          <caret line="183" column="89" selection-start-line="183" selection-start-column="89" selection-end-line="183" selection-end-column="89" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1425">
+          <caret line="75" column="70" selection-start-line="75" selection-start-column="70" selection-end-line="75" selection-end-column="91" />
+          <folding>
+            <element signature="e#117#137#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/JZXInterface.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="23" column="13" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="5966">
@@ -526,7 +582,7 @@
         <state relative-caret-position="608">
           <caret line="32" column="51" selection-start-line="32" selection-start-column="51" selection-end-line="32" selection-end-column="51" />
           <folding>
-            <element signature="e#47#61#0" expanded="true" />
+            <element signature="e#47#61#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -536,7 +592,7 @@
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -590,14 +646,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/JZXInterface/JZXInterface.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="437">
-          <caret line="23" column="13" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/JZXInterface/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="95">
@@ -606,31 +654,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.h">
+    <entry file="file://$PROJECT_DIR$/com/record_set.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="361">
-          <caret line="75" column="70" selection-start-line="75" selection-start-column="70" selection-end-line="75" selection-end-column="91" />
+        <state relative-caret-position="1812">
+          <caret line="100" column="27" selection-start-line="100" selection-start-column="27" selection-end-line="100" selection-end-column="27" />
           <folding>
-            <element signature="e#117#137#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/record_set.cpp">
+    <entry file="file://C:/Program Files (x86)/mingw-w64/i686-5.3.0-posix-dwarf-rt_v4-rev0/mingw32/i686-w64-mingw32/include/c++/bits/basic_string.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-807">
-          <caret line="9" column="23" selection-start-line="9" selection-start-column="16" selection-end-line="9" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="230">
+          <caret line="1163" column="6" selection-start-line="1163" selection-start-column="6" selection-end-line="1163" selection-end-column="6" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/JZXInterface/encode_dll_wrapper.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
+        <state relative-caret-position="368">
           <caret line="86" column="39" selection-start-line="86" selection-start-column="39" selection-end-line="86" selection-end-column="39" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/record_set.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="26">
+          <caret line="11" column="50" selection-start-line="11" selection-start-column="41" selection-end-line="11" selection-end-column="50" />
+          <folding>
+            <element signature="e#47#61#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -642,20 +698,44 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/com/record_set.h">
+    <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="97" column="16" selection-start-line="97" selection-start-column="16" selection-end-line="97" selection-end-column="16" />
+        <state relative-caret-position="325">
+          <caret line="72" column="23" selection-start-line="72" selection-start-column="8" selection-end-line="72" selection-end-column="23" />
           <folding>
-            <element signature="e#47#61#0" expanded="true" />
+            <element signature="e#117#137#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/JZXInterface.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="9" selection-start-line="0" selection-start-column="1" selection-end-line="0" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/com/TradeAPI.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="534">
+          <caret line="256" column="59" selection-start-line="256" selection-start-column="43" selection-end-line="256" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/JZXInterface/main.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="446">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/JZXInterface/ImpTradeSession.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="301">
-          <caret line="182" column="35" selection-start-line="182" selection-start-column="35" selection-end-line="182" selection-end-column="35" />
+        <state relative-caret-position="604">
+          <caret line="118" column="9" selection-start-line="118" selection-start-column="9" selection-end-line="118" selection-end-column="9" />
           <folding>
             <element signature="e#38#66#0" expanded="true" />
           </folding>

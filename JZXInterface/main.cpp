@@ -20,26 +20,49 @@ extern "C" void destroy(ITradeSession * pSession) {
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
 
-using namespace boost::filesystem;
+class event_proxy: public TradeAPI::EventReceiver{
 
-using namespace std;
+public:
+    virtual void onMessage(MessageType type, const std::string &msg) override {
+
+    }
+
+    virtual void onOrderExecution(const long id, const Order &order, const ExecutionReportSeq &report) override {
+
+    }
+
+    virtual void onOrderStatus(const Order &order) override {
+
+    }
+
+    virtual void onFundAccountChanged(const AccountInfo &info) override {
+
+    }
+
+    virtual void onPositionChanged(const PositionInfo &info) override {
+
+    }
+};
+
 
 int main(int argc, char* argv[]){
-    KCBPCLIHANDLE handle;
-    if( KCBPCLI_Init(&handle)==0 ){
-        int version=0;
-        KCBPCLI_GetVersion(handle,&version);
-        std::cout << version << std::endl;
-        KCBPCLI_Exit(handle);
-    }
-    boost::filesystem::path xmlfile(boost::filesystem::initial_path().append("JZXInterface.xml"));
-    if(boost::filesystem::exists(xmlfile)) {
-        boost::property_tree::ptree pt;
-        boost::property_tree::xml_parser::read_xml(xmlfile.string(), pt);
-        int b = pt.get("session1.EndTime1", 0);
-        int a = pt.get("session1.StartTime", 0);
-
-        std::cout << a << std::endl;
+    EventReceiverPtr ep(new event_proxy());
+    ITradeSession * session = create();
+    if(session) {
+        try {
+            session->start("session1", "test", "test", ep);
+            while (1) {
+                std::string cmd;
+                std::cin >> cmd;
+                if (cmd == "quit") {
+                    break;
+                }
+            }
+        }
+        catch(std::exception &e){
+            std::cout << e.what() << std::endl;
+        }
+        destroy(session);
     }
     return 0;
 }

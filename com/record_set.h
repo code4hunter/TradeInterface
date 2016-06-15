@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <c++/iostream>
 
 class record_set
 {
@@ -134,6 +135,8 @@ public:
 
 	std::string get_text(void);
 	size_t set_text(const std::string &text,size_t pos=0);
+
+    void show_data(void);
 };
 
 #endif
