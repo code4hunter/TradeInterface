@@ -20,3 +20,6 @@ set_property(TARGET KCBPCli PROPERTY IMPORTED_IMPLIB ${PROJECT_SOURCE_DIR}/lib/K
 target_link_libraries(JZXInterface KCBPCli ${Boost_LIBRARIES})
 add_executable(testJZXInterface ${SOURCE_FILES})
 target_link_libraries(testJZXInterface KCBPCli ${Boost_LIBRARIES})
+
+add_executable(testdll testdll.cpp)
+target_link_libraries(testdll JZXInterface)

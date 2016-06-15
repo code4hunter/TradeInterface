@@ -185,7 +185,7 @@ void ImpTradeSession::login(void) {
     std::string program = "410301";
     KCBPCLIHANDLE handle = connect_gateway();
     int_request(handle,program);
-    // set funciton request parameter
+    // set function request parameter
     KCBPCLI_SetValue(handle, "inputtype", "N");//登录类型	inputtype	char(1)	Y	见备注
     KCBPCLI_SetValue(handle, "inputid", (char*)_account.c_str());//登录标识	inputid	char(64)	Y	见备注
     // execute request
