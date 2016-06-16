@@ -11,6 +11,7 @@
 
 #include <thread>
 #include <c++/condition_variable>
+#include <list>
 
 class ImpTradeSession: public TradeAPI::ITradeSession{
 public:
@@ -81,10 +82,16 @@ private:
     void call_410502(void);
 
     std::condition_variable _cv;
-    std::shared_ptr<std::thread> _worker;
+    typedef  std::shared_ptr<std::thread> THREADPTR;
+    THREADPTR _session_manager;
+    std::list<THREADPTR> _traders;
+
+    std::mutex _mtx_ss; // start stop mutex
+
     void raise_api_error(const std::string &sender,KCBPCLIHANDLE handle, int code);
     void raise_api_remote_error(const std::string &sender,KCBPCLIHANDLE handle);
-    void worker_procedure(void);
+    void session_manager_procedure(void);
+    void trader_procedure(void);
 };
 
 

@@ -22,11 +22,18 @@ ImpTradeSession::~ImpTradeSession() {
 }
 
 void ImpTradeSession::stop(void) {
-    if(_worker != NULL) {
+    std::unique_lock<std::mutex> lck (_mtx_ss);
+
+    if(_session_manager != NULL) {
         _worker_running = false;
         _cv.notify_all();
-        _worker->join();
-        _worker.reset();
+        _session_manager->join();
+        _session_manager.reset();
+
+        for(std::list<THREADPTR>::iterator it=_traders.begin();it!= _traders.end();++it){
+            (*it)->join();
+        }
+        _traders.clear();
     }
 
     if(_event_receiver) {
@@ -36,8 +43,10 @@ void ImpTradeSession::stop(void) {
 
 void ImpTradeSession::start(const std::string &sessionName, const std::string &account, const std::string &accPassword,
                             TradeAPI::EventReceiverPtr &receiver) {
+    std::unique_lock<std::mutex> lck (_mtx_ss);
+
     // check if thread is running
-    if(_worker) throw TradeAPI::api_issue_error("Session has started.");
+    if(_session_manager) throw TradeAPI::api_issue_error("Session has started.");
 
     // init params
     boost::filesystem::path xmlfile(boost::filesystem::initial_path().append("JZXInterface.xml"));
@@ -76,13 +85,20 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
     _account = account;
     _accountPassword = accPassword;
 
-    // start thread
-    _worker.reset(new std::thread(&ImpTradeSession::worker_procedure,this));
     _worker_running = true;
+
+    // start traders
+    if(_numOfTraders>10) _numOfTraders = 10;
+    for(int i=0;i<_numOfTraders;i++) {
+        _traders.push_back(new std::thread(&ImpTradeSession::trader_procedure, this));
+    }
+
+    // start thread
+    _session_manager.reset(new std::thread(&ImpTradeSession::session_manager_procedure, this));
 }
 
-void ImpTradeSession::worker_procedure(void) {
-    std::cout << "-> WORKER_PROCEDURE STARTUP." << std::endl;
+void ImpTradeSession::session_manager_procedure(void) {
+    std::cout << "-> SESSION_MANAGER_PROCEDURE STARTUP." << std::endl;
     std::mutex mtx;
     std::unique_lock<std::mutex> lck(mtx);
     while(_worker_running){
@@ -113,14 +129,14 @@ void ImpTradeSession::worker_procedure(void) {
                 }
             }
             else {
-                //执行命令
+                //执行查询成交，查询资金等的任务
             }
         }
         catch(std::exception &e){
             std::cout << e.what() << std::endl;
         }
     }
-    std::cout << "-> WORKER_PROCEDURE STOPPED." << std::endl;
+    std::cout << "-> SESSION_MANAGER_PROCEDURE STOPPED." << std::endl;
 }
 
 TradeAPI::OrderSeq ImpTradeSession::qryWorkingOrders(void) {
@@ -132,11 +148,12 @@ TradeAPI::PositionInfoSeq ImpTradeSession::qryPositions(const std::string &mkt) 
 }
 
 TradeAPI::OrderPtr ImpTradeSession::newOrderSingle(const TradeAPI::Order &ord) {
+    _cv.notify_one();
     return NULL;
 }
 
 void ImpTradeSession::cancelOrderSingle(const TradeAPI::OrderPtr &ord) {
-
+    _cv.notify_one();
 }
 
 void ImpTradeSession::reqExecReport(const TradeAPI::ResumeType type, const std::string &seqId) {
@@ -372,6 +389,26 @@ void ImpTradeSession::call_410502(void) {
     // process answer
     result.show_data();
 }
+
+void ImpTradeSession::trader_procedure(void) {
+    std::cout << "-> TRADER_PROCEDURE STARTUP." << std::endl;
+    std::mutex mtx;
+    std::unique_lock<std::mutex> lck(mtx);
+    while(_worker_running){
+        _cv.wait(lck);
+        if(this->_is_login) {
+            try {
+                //获得命令并执行
+            }
+            catch (std::exception &e) {
+                std::cout << e.what() << std::endl;
+            }
+        }
+    }
+    std::cout << "-> TRADER_PROCEDURE STOPPED." << std::endl;
+}
+
+
 
 
 
