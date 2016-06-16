@@ -72,7 +72,7 @@ public:
 
     int Encrypt(const char *pSrc, char *pDst, const char *key, int encryptType) {
         std::unique_lock<std::mutex> lock(_mutex);
-        if (encryptType == 0) {
+        if (encryptType == 1) {
             if (DEncodeFun != NULL) {
                 strcpy(pDst, DEncodeFun((const char *) pSrc));
             }
@@ -83,8 +83,8 @@ public:
             //第一次登录是登录请求号
             //以后的登录就是客户号
             if (KEncodeFun != NULL) {
-                KEncodeFun(KDCOMPLEX_ENCODE, (unsigned char *) pSrc, strlen(pSrc), (unsigned char *) pDst, 21,
-                           (char*)key, strlen(key));
+                KEncodeFun(KDCOMPLEX_ENCODE,(unsigned char*)pSrc,strlen(pSrc),(unsigned char*)pDst,254+1,
+                           (unsigned char*)key,strlen(key));
             }
             else return -1;
         }

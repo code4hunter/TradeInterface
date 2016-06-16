@@ -33,7 +33,7 @@ int main(int argc, char* argv[]){
     ITradeSession * session = create();
     if(session) {
         try {
-            session->start("session1", "test", "test", ep);
+            session->start("session1", "2013970", "123321", ep);
             while (1) {
                 std::string cmd;
                 std::cin >> cmd;

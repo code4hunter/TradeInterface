@@ -14,10 +14,10 @@
     #JZX system params
     <szServerName>RDC-ZHANGZ</szServerName>
     <nProtocol>0</nProtocol>
-    <szAddress>114.141.166.21</szAddress>
-    <nPort>18002</nPort>
-    <szSendQName>req1</szSendQName>
-    <szReceiveQName>ans1</szReceiveQName>
+    <szAddress>127.0.0.1</szAddress>
+    <nPort>21000</nPort>
+    <szSendQName>req_yyb3</szSendQName>
+    <szReceiveQName>ans_yyb3</szReceiveQName>
     <szReserved>0</szReserved>
     <Timeout>5</Timeout>
     <UserName>KCXP00</UserName>
@@ -27,12 +27,12 @@
     <EncryptType>0</EncryptType>
     #JZX其他参数
     //营业部代码
-    <orgid>2100</orgid>
+    <orgid>1102</orgid>
     //操作委托方式
     <operway>6</operway>
     //操作站点
-    <netaddr>010.124.037.091D89D671A5DC5Xeon(R)CPUE5-2665WIN-IMRS4S3ALMFxxxhollynoob</netaddr>
+    <netaddr>192.168.015.202 34-17-EB-E0-0F-B1</netaddr>
     <SHA>1</SHA>
-    <SZA>2</SZA>
+    <SZA>0</SZA>
 
 </session1>

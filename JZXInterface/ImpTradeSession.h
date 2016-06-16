@@ -78,6 +78,7 @@ private:
     void disconnect_gateway(KCBPCLIHANDLE handle);
     void login(void);
     void logout(void);
+    void call_410502(void);
 
     std::condition_variable _cv;
     std::shared_ptr<std::thread> _worker;

@@ -82,7 +82,7 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
 }
 
 void ImpTradeSession::worker_procedure(void) {
-    std::cout << "-> worker_procedure startup." << std::endl;
+    std::cout << "-> WORKER_PROCEDURE STARTUP." << std::endl;
     std::mutex mtx;
     std::unique_lock<std::mutex> lck(mtx);
     while(_worker_running){
@@ -100,6 +100,8 @@ void ImpTradeSession::worker_procedure(void) {
                         if (_last_exec_time > tm) _last_exec_time = tm;
                         if (second_between_time(_last_exec_time, tm) >= _heartBtInt) {
                             //调用心跳
+                            std::cout << "-> WORKER_PROCEDURE HEARTBEATS:" << tm << std::endl;
+                            call_410502();
                         }
                     }
                 }
@@ -118,7 +120,7 @@ void ImpTradeSession::worker_procedure(void) {
             std::cout << e.what() << std::endl;
         }
     }
-    std::cout << "-> worker_procedure stopped." << std::endl;
+    std::cout << "-> WORKER_PROCEDURE STOPPED." << std::endl;
 }
 
 TradeAPI::OrderSeq ImpTradeSession::qryWorkingOrders(void) {
@@ -159,7 +161,6 @@ void ImpTradeSession::cancelExeReport(void) {
 
 void ImpTradeSession::raise_api_error(const std::string &sender, KCBPCLIHANDLE handle, int code) {
     if( handle == NULL) return;
-
     std::ostringstream os;
         os << "HANDLE:" << handle << " FUNCTION:" << sender << " CODE:" << code;
 
@@ -186,7 +187,7 @@ void ImpTradeSession::login(void) {
     KCBPCLIHANDLE handle = connect_gateway();
     int_request(handle,program);
     // set function request parameter
-    KCBPCLI_SetValue(handle, "inputtype", "N");//登录类型	inputtype	char(1)	Y	见备注
+    KCBPCLI_SetValue(handle, "inputtype", "Z");//登录类型	inputtype	char(1)	Y	见备注
     KCBPCLI_SetValue(handle, "inputid", (char*)_account.c_str());//登录标识	inputid	char(64)	Y	见备注
     // execute request
     record_set result;
@@ -335,21 +336,20 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
         int nRow;
         KCBPCLI_RsGetColNum(handle, &nCol);
         KCBPCLI_RsGetRowNum(handle, &nRow);
-        record_set rs(nCol,nRow);
-
-        int iRow = 1;
+        records.resize(nCol,nRow);
+        size_t iRow = 1;
         while( !KCBPCLI_RsFetchRow(handle) )
         {
-            for( int i = 1; i <= nCol; i++ )
+            for( size_t i = 1; i <= nCol; i++ )
             {
                 if( iRow == 1) {
                     char colName[512];
                     KCBPCLI_RsGetColName(handle, i, colName, sizeof(colName));
-                    rs.add_field_name(colName);
+                    records.add_field_name(colName);
                 }
                 char value[512];
                 KCBPCLI_RsGetCol( handle, i, value );
-                rs.set_field_value(i-1,value,iRow);
+                records.set_field_value(i-1,value,iRow);
             }
             iRow++;
         }
@@ -357,6 +357,23 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
 
     KCBPCLI_SQLCloseCursor(handle);
 }
+
+void ImpTradeSession::call_410502(void) {
+    std::string program = "410502";
+    KCBPCLIHANDLE handle = connect_gateway();
+    int_request(handle,program);
+    // set function request parameter
+    KCBPCLI_SetValue(handle, "fundid", "");
+    KCBPCLI_SetValue(handle, "moneytype","");
+    // execute request
+    record_set result;
+    exec_request(handle,program,result);
+    disconnect_gateway(handle);
+    // process answer
+    result.show_data();
+}
+
+
 
 
 
