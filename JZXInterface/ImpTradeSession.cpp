@@ -90,7 +90,7 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
     // start traders
     if(_numOfTraders>10) _numOfTraders = 10;
     for(int i=0;i<_numOfTraders;i++) {
-        _traders.push_back(new std::thread(&ImpTradeSession::trader_procedure, this));
+        _traders.push_back(THREADPTR(new std::thread(&ImpTradeSession::trader_procedure, this)));
     }
 
     // start thread
