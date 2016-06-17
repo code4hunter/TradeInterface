@@ -270,7 +270,8 @@ namespace TradeAPI {
 
         //*pretrade
         //查询金融工具
-        //filter  sql condition section
+        //type:STK,ETF,IND,BOND,FUT,CASH,CMDTY,FOP,OPT
+        //market:SSE, SZSE, SHFE, DCE, CZCE, CFFEX, HKEX,ECBOT,SMART
         virtual InstrumentDetailsDict qryInstruments(const std::string &mkt, const std::string &secType) = 0;
 
         //订阅变动通知

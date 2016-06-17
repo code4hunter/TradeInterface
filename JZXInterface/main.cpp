@@ -24,7 +24,7 @@ class event_proxy: public TradeAPI::EventReceiver{
 
 public:
     virtual void onMessage(MessageType type, const std::string &msg) override {
-
+        std::cout << "*ONMESSAGE:" << type << msg << std::endl;
     }
 
     virtual void onOrderExecution(const long id, const Order &order, const ExecutionReportSeq &report) override {

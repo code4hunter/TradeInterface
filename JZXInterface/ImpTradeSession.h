@@ -92,6 +92,8 @@ private:
     void raise_api_remote_error(const std::string &sender,KCBPCLIHANDLE handle);
     void session_manager_procedure(void);
     void trader_procedure(void);
+
+    void pub_message(TradeAPI::MessageType type, const char *__format, ...);
 };
 
 

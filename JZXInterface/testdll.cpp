@@ -8,7 +8,7 @@ class event_proxy: public TradeAPI::EventReceiver{
 
 public:
     virtual void onMessage(MessageType type, const std::string &msg) override {
-
+        std::cout << "* ONMESSAGE:" << type << msg << std::endl;
     }
 
     virtual void onOrderExecution(const long id, const Order &order, const ExecutionReportSeq &report) override {
@@ -34,17 +34,27 @@ int main(int argc, char* argv[]){
     if(session) {
         try {
             session->start("session1", "2013970", "123321", ep);
-            while (1) {
-                std::string cmd;
-                std::cin >> cmd;
-                if (cmd == "quit") {
-                    break;
-                }
-            }
         }
         catch(std::exception &e){
             std::cout << e.what() << std::endl;
         }
+        while (1) {
+            std::string cmd;
+            std::cin >> cmd;
+
+            try {
+                if (cmd == "quit") {
+                    break;
+                }
+                else if (cmd == "qryInstruments") {
+                    session->qryInstruments("", "");
+                }
+            }
+            catch(std::exception&e){
+                std::cout << e.what() << std::endl;
+            }
+        }
+
         destroy(session);
     }
     return 0;

@@ -117,6 +117,7 @@ void ImpTradeSession::session_manager_procedure(void) {
                         if (second_between_time(_last_exec_time, tm) >= _heartBtInt) {
                             //调用心跳
                             std::cout << "-> WORKER_PROCEDURE HEARTBEATS:" << tm << std::endl;
+                            pub_message(TradeAPI::MessageType::MTInfo,"WORKER_PROCEDURE HEARTBEATS AT: %d", tm);
                             call_410502();
                         }
                     }
@@ -169,6 +170,19 @@ void ImpTradeSession::subscribeEvents(const long events, TradeAPI::ResumeType rt
 }
 
 TradeAPI::InstrumentDetailsDict ImpTradeSession::qryInstruments(const std::string &mkt,const std::string &secType) {
+    std::string program = "410203";
+    KCBPCLIHANDLE handle = connect_gateway();
+    int_request(handle,program);
+    // set function request parameter
+    KCBPCLI_SetValue(handle, "market", "1");
+    KCBPCLI_SetValue(handle, "stkcode","");
+    // execute request
+    record_set result;
+    exec_request(handle,program,result);
+    disconnect_gateway(handle);
+    // process answer
+    result.show_data();
+
     return TradeAPI::InstrumentDetailsDict();
 }
 
@@ -328,21 +342,21 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
 
     KCBPCLI_SQLFetch(handle);
 
-    char tmpbuf[1024];
-    if( (ret= KCBPCLI_RsGetColByName( handle, "CODE", tmpbuf ))!=0 ) {
+    char text[1024];
+    if( (ret= KCBPCLI_RsGetColByName( handle, "CODE", text ))!=0 ) {
         disconnect_gateway(handle);
         this->raise_api_error("KCBPCLI_RsGetColByName",handle,ret);
     }
 
-    if( atoi(tmpbuf) != 0 )
+    if( atoi(text) != 0 )
     {
         std::ostringstream os;
         os << "HANDLE:" << handle << " FUNCTION:" << program ;
-        os << " CODE :" << tmpbuf ;
-        KCBPCLI_RsGetColByName( handle, "LEVEL", tmpbuf );
-        os << " LEVEL:" <<tmpbuf;
-        KCBPCLI_RsGetColByName( handle, "MSG", tmpbuf );
-        os << " MSG:" << tmpbuf ;
+        os << " CODE :" << text ;
+        KCBPCLI_RsGetColByName( handle, "LEVEL", text );
+        os << " LEVEL:" << text;
+        KCBPCLI_RsGetColByName( handle, "MSG", text );
+        os << " MSG:" << text ;
         disconnect_gateway(handle);
         throw TradeAPI::api_issue_error(os.str());
     }
@@ -407,6 +421,23 @@ void ImpTradeSession::trader_procedure(void) {
     }
     std::cout << "-> TRADER_PROCEDURE STOPPED." << std::endl;
 }
+
+void ImpTradeSession::pub_message(TradeAPI::MessageType type, const char *__format, ...) {
+    if(_event_receiver==NULL) return;
+
+    va_list		argptr;
+    char		*text;
+    va_start(argptr, __format);
+    int len = _vscprintf(__format, argptr) + 1; // _vscprintf doesn't count+ 1; // terminating '\0'
+    text = (char*)malloc(len * sizeof(char));
+    vsnprintf(text, len, __format, argptr);
+    va_end(argptr);
+    std::string msg(text);
+    free(text);
+    _event_receiver->onMessage(type,msg);
+}
+
+
 
 
 
