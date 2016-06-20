@@ -34,7 +34,7 @@ public:
 
     void cancelExeReport(void);
 
-    TradeAPI::OrderPtr newOrderSingle(const TradeAPI::Order &ord);
+    void newOrderSingle(TradeAPI::OrderPtr &ord);
 
     void cancelOrderSingle(const TradeAPI::OrderPtr &ord);
 
@@ -94,6 +94,13 @@ private:
     void trader_procedure(void);
 
     void pub_message(TradeAPI::MessageType type, const char *__format, ...);
+
+    TradeAPI::OrderSeq _all_orders;        //所有委托列表
+    TradeAPI::OrderDict _working_orders;   //有委托号未成交的委托
+
+    void check_and_add_order(TradeAPI::OrderPtr &ord);
+    void exec_order(TradeAPI::OrderPtr &ord);
+    std::mutex _mtx_all_orders;
 };
 
 

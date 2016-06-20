@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <memory>
 #include <assert.h>
+#include <cmath>
 
 //#ifdef TRADEGATEWAY_API_EXPORTS
 //#define TRADE_API __declspec(dllexport)
@@ -35,6 +36,14 @@ namespace TradeAPI {
         double positionsMarketValue;    //参考持仓市值
         double fundAvaForTransout;      //资金可转出
         DICT extra; //其他字段
+
+        AccountInfo(){
+            fundBalance = NAN;
+            equity =  NAN;
+            fundAvaForTrade =  NAN;
+            positionsMarketValue =  NAN;
+            fundAvaForTransout =  NAN;
+        }
     };
 
     struct Instrument {
@@ -78,6 +87,12 @@ namespace TradeAPI {
                 ret = minFee;
             return ret;
         }
+
+        Fee(){
+            volumeFee = NAN;
+            turnoverFee = NAN;
+            minFee = NAN;
+        }
     };
 
     typedef std::vector<Fee> FeesSeq;
@@ -101,32 +116,41 @@ namespace TradeAPI {
         std::string tradingHours;
         //xxxxxx:xxxxxx;xxxxxx:xxxxxx
         DICT extra;  //其他细节信息
+
+        InstrumentDetails(){
+            minTick = NAN;
+            upStopPrice = NAN;
+            downStopPrice = NAN;
+            minOrderUnit = 0;
+            maxOrderSize = 0;
+        }
     };
     typedef std::shared_ptr<InstrumentDetails> InstrumentDetailsPtr;
     typedef std::map<std::string, InstrumentDetailsPtr> InstrumentDetailsDict;
 
     enum OrderStatus {
         //以下是委托未确认状态
-                OSNew,           //委托最初状态
+        OSNew,           //委托最初状态
         OSPendingNew,    //委托已发
         OSWorking,       //委托在成交中(已经有成交了）
         OSPendingCancel, //委托撤单请求已发
 
         //以下是确定状态
-                OSFilled,        //全部成交了，委托量==成交量
+        OSFilled,        //全部成交了，委托量==成交量
         OSCanceled,      //委托量==成交量+撤销量，撤销量>0
         OSStopped,       //委托已停止，成交量=0
         OSRejected,      //委托已拒绝，成交量=0
 
         //未决状态
-                OSUnknown,
+        OSUnknown,
     };
 
     enum ExecutionReportType {
         RTCanceled, //撤单回报
         RTRejected, //拒绝回报
         RTStopped,  //停止回报,日终停止
-        RTTrade     //成交回报
+        RTTrade,     //成交回报
+        RTUnknown,
     };
 
     struct ExecutionReport {
@@ -137,6 +161,13 @@ namespace TradeAPI {
         double lastPx;
         int date;
         int time;
+        ExecutionReport(){
+            type =RTUnknown;
+            lastQty = 0;
+            lastPx = NAN;
+            date = 0;
+            time = 0;
+        }
     };
 
     typedef std::shared_ptr<ExecutionReport> ExecutionReportPtr;
@@ -150,9 +181,16 @@ namespace TradeAPI {
         double leavesQty;             //剩余量
         ExecutionReportSeq exec;
         DICT extra;
+        OrderReport(){
+            ordStatus = OSNew;
+            totalQty = NAN;
+            avgPric= NAN;
+            leavesQty =NAN;
+        }
     };
 
     struct Order {
+        long id;             //本地ID
         std::string account;
         std::string instId;
 
@@ -161,11 +199,11 @@ namespace TradeAPI {
         // LendBuy:融资买入,BorrowSell:融券卖出
         // SellRepayment:卖券还款,BuyGiveBack:买券还券,GiveBack:现券还券,Repayment:直接还款
         std::string side;
-        std::string posEfct;  // Open,Close
+        std::string posEfct;  // Open,Close, CloseToday
         std::string type;     // Market:市价委托,Limit限定价格
         double lmtPrice;
         double ordQty;
-        std::string ordId;
+        std::string ordId; //接口返回的编号
         int createDate;
         int createTime;
         std::string text;      //备注
@@ -173,6 +211,16 @@ namespace TradeAPI {
         int endTime;
         OrderReport report;
         DICT extra;
+
+        Order(){
+            id = 0;
+            lmtPrice = NAN;
+            ordQty = NAN;
+            createDate = 0;
+            createTime = 0;
+            endDate = 0;
+            endTime = 0;
+        }
     };
 
     typedef std::shared_ptr<Order> OrderPtr;
@@ -201,6 +249,17 @@ namespace TradeAPI {
         double margin;          //保证金占用
         double mktPrice;        //当前价
         DICT extra;
+
+        PositionInfo(){
+            balance = 0;
+            holdPosition = 0;
+            prePosition = 0;
+            todayPosition = 0;
+            canClosePosition = 0;
+            avgPrice =NAN;
+            margin = NAN;
+            mktPrice = NAN;
+        }
     };
 
     typedef std::shared_ptr<PositionInfo> PositionInfoPtr;
@@ -287,7 +346,7 @@ namespace TradeAPI {
         virtual void cancelExeReport(void) = 0;
 
         //单个委托，返回委托
-        virtual OrderPtr newOrderSingle(const Order &ord) = 0;
+        virtual void newOrderSingle(OrderPtr &ord) = 0;
 
         //撤销单个委托
         virtual void cancelOrderSingle(const OrderPtr &ord) = 0;
