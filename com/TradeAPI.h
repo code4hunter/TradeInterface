@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <queue>
 #include <vector>
 #include <exception>
 #include <stdexcept>
@@ -138,7 +139,7 @@ namespace TradeAPI {
         //以下是确定状态
         OSFilled,        //全部成交了，委托量==成交量
         OSCanceled,      //委托量==成交量+撤销量，撤销量>0
-        OSStopped,       //委托已停止，成交量=0
+        OSStopped,       //委托已停止，委托量==成交量+撤销量，撤销量>0
         OSRejected,      //委托已拒绝，成交量=0
 
         //未决状态
@@ -226,6 +227,7 @@ namespace TradeAPI {
     typedef std::shared_ptr<Order> OrderPtr;
     typedef std::list<OrderPtr> OrderSeq;
     typedef std::map<std::string, OrderPtr> OrderDict;
+    typedef std::queue<OrderPtr> OrderQueue;
 
     enum PositionDirection {
         PDUnknown,

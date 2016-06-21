@@ -413,6 +413,11 @@ void ImpTradeSession::trader_procedure(void) {
         if (this->_is_login) {
             try {
                 //获得命令并执行
+                std::unique_lock<std::mutex> lck(_mtx_all_orders);
+                TradeAPI::OrderPtr &ord =_all_orders.front();
+                _all_orders.pop();
+                lck.unlock();
+                this->exec_order(ord);
             }
             catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
@@ -477,11 +482,14 @@ void ImpTradeSession::check_and_add_order(TradeAPI::OrderPtr &ord) {
         throw TradeAPI::api_issue_error("Bad ordStatus, not OSNew!");
     }
     std::unique_lock<std::mutex> lck(_mtx_all_orders);
-    _all_orders.push_back(ord);
+    _all_orders.push(ord);
 }
 
 void ImpTradeSession::exec_order(TradeAPI::OrderPtr &ord) {
-
+    //发送委托到三方接口
+    //获得委托号
+    //更新状态
+    ord->report.ordStatus = OrderStatus::OSPendingNew;
 }
 
 

@@ -11,7 +11,9 @@
 
 #include <thread>
 #include <c++/condition_variable>
-#include <list>
+#include <queue>
+
+using namespace TradeAPI;
 
 class ImpTradeSession: public TradeAPI::ITradeSession{
 public:
@@ -95,7 +97,7 @@ private:
 
     void pub_message(TradeAPI::MessageType type, const char *__format, ...);
 
-    TradeAPI::OrderSeq _all_orders;        //所有委托列表
+    TradeAPI::OrderQueue _all_orders;        //所有委托列表
     TradeAPI::OrderDict _working_orders;   //有委托号未成交的委托
 
     void check_and_add_order(TradeAPI::OrderPtr &ord);
