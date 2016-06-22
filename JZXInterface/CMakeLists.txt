@@ -4,7 +4,7 @@ project(JZXInterface)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 set(SOURCE_FILES main.cpp ImpTradeSession.cpp ImpTradeSession.h encode_dll_wrapper.cpp ../com/time_utlity.cpp
-        ../com/record_set.cpp ../com/record_set.h)
+        ../com/record_set.cpp ../com/record_set.h ../com/utlity.cpp ../com/utlity.h)
 add_library(JZXInterface SHARED ${SOURCE_FILES})
 
 find_path(Boost_cfg NAMES project-config.jam PATHS F:\\lib\\boost_1_61_0 D:\\lib\\boost_1_61_0)

@@ -5,6 +5,7 @@
 #include "ImpTradeSession.h"
 #include "../com/time_utlity.h"
 #include "encode_dll_wrapper.h"
+#include "../com/utlity.h"
 
 #include <c++/sstream>
 #include <c++/atomic>
@@ -77,6 +78,8 @@ void ImpTradeSession::start(const std::string &sessionName, const std::string &a
             _netaddr = tree.get<std::string>(sessionName + ".netaddr");
             _username = tree.get<std::string>(sessionName + ".UserName");
             _password = tree.get<std::string>(sessionName + ".Password");
+            _SHA = tree.get<std::string>(sessionName + ".SHA");
+            _SZA = tree.get<std::string>(sessionName + ".SZA");
         }
         catch (std::exception &e) {
             throw TradeAPI::api_issue_error(std::string("Load config file error:") + e.what());
@@ -177,7 +180,13 @@ TradeAPI::InstrumentDetailsDict ImpTradeSession::qryInstruments(const std::strin
     KCBPCLIHANDLE handle = connect_gateway();
     int_request(handle, program);
     // set function request parameter
-    KCBPCLI_SetValue(handle, "market", "1");
+    if( mkt == "SSE"){
+        KCBPCLI_SetValue(handle, "market", _SHA.c_str());
+    }
+    else if( mkt == "SZSE"){
+        KCBPCLI_SetValue(handle, "market", _SZA.c_str());
+    }
+
     KCBPCLI_SetValue(handle, "stkcode", "");
     // execute request
     record_set result;
@@ -230,10 +239,25 @@ void ImpTradeSession::login(void) {
     // process answer
     result.show_data();
     _cust_id = result.get_field_value("custid");
+    try {
+        _creditflag = result.get_field_value("creditflag");
+    }
+    catch(std::exception &e){
+        _creditflag = "0";
+    }
     char enpassword[255];
     memset(enpassword, 0, 255);
     encode_dll_wrapper::instance()->Encrypt(_accountPassword.c_str(), enpassword, _cust_id.c_str(), _encryptType);
     _encode_password.assign(enpassword);
+    //获得股东账户
+    _secuid.clear();
+    for(size_t row = 0; row< result.get_row_size(); row++){
+        std::string k = result.get_field_value("market",row+1);
+        std::string v = result.get_field_value("secuid",row+1);
+        if( k.size()>0 && v.size()>0 ){
+            _secuid[k] = v;
+        }
+    }
 }
 
 void ImpTradeSession::logout(void) {
@@ -369,7 +393,7 @@ void ImpTradeSession::exec_request(KCBPCLIHANDLE handle, const std::string &prog
         int nRow;
         KCBPCLI_RsGetColNum(handle, &nCol);
         KCBPCLI_RsGetRowNum(handle, &nRow);
-        records.resize(nCol, nRow);
+        records.resize(nCol, nRow-1);
         size_t iRow = 1;
         while (!KCBPCLI_RsFetchRow(handle)) {
             for (size_t i = 1; i <= nCol; i++) {
@@ -455,8 +479,8 @@ void ImpTradeSession::check_and_add_order(TradeAPI::OrderPtr &ord) {
     get_current_dt(d, t);
     ord->createDate = d;
     ord->createTime = t;
-    if (ord->instId.size() == 0) {
-        throw TradeAPI::api_issue_error("Can not find InstId");
+    if (ord->inst.symbol.size()==0 || ord->inst.exchange.size()==0) {
+        throw TradeAPI::api_issue_error("Bad Instrument!");
     }
     if (ord->ordQty <= 0) {
         throw TradeAPI::api_issue_error("Bad ordQty!");
@@ -487,6 +511,60 @@ void ImpTradeSession::check_and_add_order(TradeAPI::OrderPtr &ord) {
 
 void ImpTradeSession::exec_order(TradeAPI::OrderPtr &ord) {
     //发送委托到三方接口
+    std::string program;
+    KCBPCLIHANDLE handle = connect_gateway();
+    if(_creditflag == "1"){  //信用账户
+        program = "420411";
+        int_request(handle, program);
+        // set function request parameter
+        KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
+        KCBPCLI_SetValue(handle, "bsflag", "");
+        if( ord->inst.exchange == "SSE" ){
+            KCBPCLI_SetValue(handle, "market", _SHA.c_str());
+            KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
+        }
+        else if(ord->inst.exchange == "SZSE"){
+            KCBPCLI_SetValue(handle, "market", _SZA.c_str());
+            KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
+        }
+        KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
+        KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice,10).c_str());
+        KCBPCLI_SetValue(handle, "qty", IntToString((int)ord->ordQty).c_str());
+        if(ord->side == "LendBuy" || ord->side == "SellRepayment" || ord->side == "Repayment"){
+            KCBPCLI_SetValue(handle, "credittype", "1"); //融资交易
+        }
+        else if(ord->side == "BorrowSell" || ord->side == "BuyGiveBack" || ord->side == "GiveBack"){
+            KCBPCLI_SetValue(handle, "credittype", "2"); //融券交易
+        }
+        else{
+            KCBPCLI_SetValue(handle, "credittype", "0"); //普通交易
+        }
+    }
+    else{ //普通账户
+        program = "410411";
+        int_request(handle, program);
+        // set function request parameter
+        KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
+        KCBPCLI_SetValue(handle, "bsflag", "");
+        if( ord->inst.exchange == "SSE" ){
+            KCBPCLI_SetValue(handle, "market", _SHA.c_str());
+            KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
+        }
+        else if(ord->inst.exchange == "SZSE"){
+            KCBPCLI_SetValue(handle, "market", _SZA.c_str());
+            KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
+        }
+        KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
+        KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice,10).c_str());
+        KCBPCLI_SetValue(handle, "qty", IntToString((int)ord->ordQty).c_str());
+        KCBPCLI_SetValue(handle, "ordergroup", "-1");
+    }
+    // execute request
+    record_set result;
+    exec_request(handle, program, result);
+    disconnect_gateway(handle);
+    // process answer
+    result.show_data();
     //获得委托号
     //更新状态
     ord->report.ordStatus = OrderStatus::OSPendingNew;

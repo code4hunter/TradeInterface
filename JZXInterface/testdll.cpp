@@ -46,7 +46,7 @@ int main(int argc, char* argv[]){
                 if (cmd == "quit") {
                     break;
                 }
-                else if (cmd == "qryInstruments") {
+                else if (cmd == "inst") {
                     session->qryInstruments("", "");
                 }
             }

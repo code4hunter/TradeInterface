@@ -67,7 +67,7 @@ public:
             return idx ;
 		}
 		else
-			throw("Field name already exists!");
+			throw(std::logic_error("Field name already exists!"));
 	}
 
     size_t get_field_id(const std::string& name)
@@ -78,7 +78,7 @@ public:
             return iter->second;
         }
         else
-			throw(("Can not find field:"+name).c_str());
+			throw(std::logic_error(("Can not find field:"+name).c_str()));
     }
 
 	void set_field_value(const std::string& name,const std::string& value,const size_t row=1)
@@ -88,12 +88,12 @@ public:
 		{
 			size_t index = get_column_size()*(row-1)+iter->second;
 			if(_values.size()<index+1)
-				throw("Index out of space!");
+				throw(std::logic_error("Index out of space!"));
             else
                 _values[index] = value;
         }
         else
-			throw(("Can not find field:"+name).c_str());
+			throw(std::logic_error(("Can not find field:"+name).c_str()));
 	}
 
 	std::string get_field_value(const std::string& name,const size_t row=1)
@@ -104,20 +104,20 @@ public:
 			size_t index = get_column_size()*(row-1)+iter->second;
 			if(_values.size()<index+1)
 			{
-				throw("Index out of space!");
+				throw(std::logic_error("Index out of space!"));
 			}
 			else
 				return _values[index];
 		}
 		else
-			throw(("Can not find field:"+name).c_str());
+			throw(std::logic_error(("Can not find field:"+name).c_str()));
 	}
 
     void set_field_value(const size_t fieldId, const std::string& value,const size_t row=1)
 	{
         size_t index = get_column_size()*(row-1)+fieldId;
         if(_values.size()<index+1)
-            throw("Index out of space!");
+            throw(std::logic_error("Index out of space!"));
         else
             _values[index] = value;
 	}
@@ -127,7 +127,7 @@ public:
         size_t index = get_column_size()*(row-1)+fieldId;
         if(_values.size()<index+1)
         {
-            throw("Index out of space!");
+            throw(std::logic_error("Index out of space!"));
         }
         else
             return _values[index];

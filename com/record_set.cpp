@@ -69,11 +69,11 @@ size_t record_set::set_text(const std::string &text, size_t pos) {
             trow = 0;
 
         if (tcol != _col) {
-            throw ("解析失败，接收到的列数和收到的列不一致");
+            throw (std::logic_error("解析失败，接收到的列数和收到的列不一致"));
         }
 
         if ((trow) != _row)
-            throw ("解析失败，接收到的行数和收到的行不一致");
+            throw (std::logic_error("解析失败，接收到的行数和收到的行不一致"));
 
     }
     else {

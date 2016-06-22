@@ -10,10 +10,12 @@
       <sourceFolder url="file://$MODULE_DIR$/JZXInterface/testdll.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/JZXInterface/encode_dll_wrapper.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/com/record_set.cpp" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/com/time_utlity.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/utlity.cpp" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/utlity.h" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com/record_set.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/record_set.cpp" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/com/time_utlity.h" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/com/time_utlity.cpp" isTestSource="false" />
     </content>
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library">

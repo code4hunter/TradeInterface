@@ -4,5 +4,6 @@
     <file url="file://$PROJECT_DIR$/JZXInterface/KDEncodeCli.h" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/com/record_set.cpp" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/com/record_set.h" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/com/utlity.h" charset="UTF-8" />
   </component>
 </project>

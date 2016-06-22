@@ -50,8 +50,7 @@ namespace TradeAPI {
     struct Instrument {
         std::string id;         //唯一ID
         std::string symbol;     //代码
-        std::string localSymbol;
-        //本地名称
+        std::string localSymbol;//本地名称
         std::string currency;   //币种  RMB,USD,HKD
         std::string secType;    //STK,ETF,IND,BOND,FUT,CASH,CMDTY,FOP,OPT
         std::string exchange;   //SSE, SZSE, SHFE, DCE, CZCE, CFFEX, HKEX,ECBOT,SMART
@@ -106,7 +105,7 @@ namespace TradeAPI {
         double minTick;         //最小报价单位元
         double upStopPrice;     //涨停价
         double downStopPrice;   //跌停价
-        long minOrderUnit;        //最小委托单位
+        long minOrderUnit;      //最小委托单位
         long maxOrderSize;      //最大委托上限
         std::string contractMonth;
         //合约月份
@@ -155,6 +154,7 @@ namespace TradeAPI {
     };
 
     struct ExecutionReport {
+        std::string ordId;
         std::string execId;       //成交编号
         ExecutionReportType type;
         std::string ordRejReason;
@@ -193,7 +193,7 @@ namespace TradeAPI {
     struct Order {
         long id;             //本地ID
         std::string account;
-        std::string instId;
+        Instrument inst;
 
         // Buy:买,Sell:卖,
         // Subscribe:申购,Redeem:赎回,
@@ -237,7 +237,7 @@ namespace TradeAPI {
 
     struct PositionInfo {
         std::string account;
-        std::string instId;
+        Instrument inst;
 
         //NetDelta(DLT):净增加的量,Credit Event Adjustment(CEA):信用交易量
         std::string positionType;

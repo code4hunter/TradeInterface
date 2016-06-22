@@ -69,6 +69,10 @@ private:
     std::string _netaddr;
     std::string _username;
     std::string _password;
+    std::string _SHA;
+    std::string _SZA;
+    std::string _creditflag;
+    std::map<std::string,std::string> _secuid;
 
     bool _is_login;
     std::string _encode_password;
