@@ -101,11 +101,12 @@ private:
 
     void pub_message(TradeAPI::MessageType type, const char *__format, ...);
 
-    TradeAPI::OrderQueue _all_orders;        //所有委托列表
-    TradeAPI::OrderDict _working_orders;   //有委托号未成交的委托
-
+    TradeAPI::OrderQueue _no_exec_orders;        //所有委托列表
+    TradeAPI::OrderDict _working_orders;     //有委托号未成交的委托
+    void clear_all_orders(void); //盘后清除所有委托
     void check_and_add_order(TradeAPI::OrderPtr &ord);
     void exec_order(TradeAPI::OrderPtr &ord);
+    void exec_del_order(TradeAPI::OrderPtr &ord);
     std::mutex _mtx_all_orders;
 };
 

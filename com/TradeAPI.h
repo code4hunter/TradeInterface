@@ -130,9 +130,10 @@ namespace TradeAPI {
 
     enum OrderStatus {
         //以下是委托未确认状态
-        OSNew,           //委托最初状态
+        OSNew,           //委托最初状态，还未发出该委托
         OSPendingNew,    //委托已发
-        OSWorking,       //委托在成交中(已经有成交了）
+        OSWorking,       //委托在成交中(已经有成交了,第一次有成交就更新为该状态）
+        OSNeedCancel,    //委托请求撤单，还未发生该请求
         OSPendingCancel, //委托撤单请求已发
 
         //以下是确定状态
@@ -201,7 +202,15 @@ namespace TradeAPI {
         // SellRepayment:卖券还款,BuyGiveBack:买券还券,GiveBack:现券还券,Repayment:直接还款
         std::string side;
         std::string posEfct;  // Open,Close, CloseToday
-        std::string type;     // Market:市价委托,Limit限定价格
+        /*
+            市价委托类型
+            Market0 以买一的价格买入，是对方买入。
+            Market1 以卖一的价格买入，是本方买入。
+            Market3 以你要买入的股票数量看看买到卖一、二、三共有多少股一起吃入，一次成交，是即时买入。
+            Market5 以卖五的价格全部吃进，是五档买入。
+            Market  以涨停的价格大批买入，是全额买入。
+         */
+        std::string type;     // Limit限定价格 ,Market:市价委托
         double lmtPrice;
         double ordQty;
         std::string ordId; //接口返回的编号

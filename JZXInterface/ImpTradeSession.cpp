@@ -109,34 +109,31 @@ void ImpTradeSession::session_manager_procedure(void) {
     std::unique_lock<std::mutex> lck(mtx);
     while (_worker_running) {
         try {
-            if (_cv.wait_for(lck, std::chrono::seconds(2)) == std::cv_status::timeout) {
-                int day, tm;
-                get_current_dt(day, tm);
-                if (tm >= this->_startTime && tm < this->_endTime) {
-                    if (!this->_is_login) {
-                        this->login();
-                        this->_is_login = true;
-                    }
-                    else {
-                        // check _heartBtInt
-                        if (_last_exec_time > tm) _last_exec_time = tm;
-                        if (second_between_time(_last_exec_time, tm) >= _heartBtInt) {
-                            //调用心跳
-                            std::cout << "-> WORKER_PROCEDURE HEARTBEATS:" << tm << std::endl;
-                            pub_message(TradeAPI::MessageType::MTInfo, "WORKER_PROCEDURE HEARTBEATS AT: %d", tm);
-                            call_410502();
-                        }
-                    }
+            std::this_thread::sleep_for (std::chrono::seconds(1));
+            int day, tm;
+            get_current_dt(day, tm);
+            if (tm >= this->_startTime && tm < this->_endTime) {
+                if (!this->_is_login) {
+                    this->login();
+                    this->_is_login = true;
                 }
                 else {
-                    if (this->_is_login) {
-                        this->_is_login = false;
-                        this->logout();
+                    // check _heartBtInt
+                    if (_last_exec_time > tm) _last_exec_time = tm;
+                    if (second_between_time(_last_exec_time, tm) >= _heartBtInt) {
+                        //调用心跳
+                        std::cout << "-> WORKER_PROCEDURE HEARTBEATS:" << tm << std::endl;
+                        pub_message(TradeAPI::MessageType::MTInfo, "WORKER_PROCEDURE HEARTBEATS AT: %d", tm);
+                        call_410502();
                     }
                 }
             }
             else {
-                //执行查询成交，查询资金等的任务
+                if (this->_is_login) {
+                    this->_is_login = false;
+                    this->logout();
+                    clear_all_orders();
+                }
             }
         }
         catch (std::exception &e) {
@@ -160,6 +157,10 @@ void ImpTradeSession::newOrderSingle(TradeAPI::OrderPtr &ord) {
 }
 
 void ImpTradeSession::cancelOrderSingle(const TradeAPI::OrderPtr &ord) {
+    if(ord->report.ordStatus == OSPendingNew || ord->report.ordStatus == OSWorking){
+        std::unique_lock<std::mutex> lck(_mtx_all_orders);
+        _no_exec_orders.push(ord);
+    }
     _cv.notify_one();
 }
 
@@ -438,10 +439,15 @@ void ImpTradeSession::trader_procedure(void) {
             try {
                 //获得命令并执行
                 std::unique_lock<std::mutex> lck(_mtx_all_orders);
-                TradeAPI::OrderPtr &ord =_all_orders.front();
-                _all_orders.pop();
+                TradeAPI::OrderPtr &ord =_no_exec_orders.front();
+                _no_exec_orders.pop();
                 lck.unlock();
-                this->exec_order(ord);
+                if(ord->report.ordStatus==OSNeedCancel){
+                    this->exec_del_order(ord);
+                }
+                else if(ord->report.ordStatus == OSNew) {
+                    this->exec_order(ord);
+                }
             }
             catch (std::exception &e) {
                 std::cout << e.what() << std::endl;
@@ -485,7 +491,7 @@ void ImpTradeSession::check_and_add_order(TradeAPI::OrderPtr &ord) {
     if (ord->ordQty <= 0) {
         throw TradeAPI::api_issue_error("Bad ordQty!");
     }
-    if (ord->type != "Limit" || ord->type != "Market") {
+    if (ord->type != "Limit" || ord->type.find("Market") == std::string::npos) {
         throw TradeAPI::api_issue_error("Bad Order type:" + ord->type);
     }
     if (ord->type == "Limit") {
@@ -506,69 +512,226 @@ void ImpTradeSession::check_and_add_order(TradeAPI::OrderPtr &ord) {
         throw TradeAPI::api_issue_error("Bad ordStatus, not OSNew!");
     }
     std::unique_lock<std::mutex> lck(_mtx_all_orders);
-    _all_orders.push(ord);
+    _no_exec_orders.push(ord);
 }
 
 void ImpTradeSession::exec_order(TradeAPI::OrderPtr &ord) {
     //发送委托到三方接口
     std::string program;
-    KCBPCLIHANDLE handle = connect_gateway();
-    if(_creditflag == "1"){  //信用账户
-        program = "420411";
-        int_request(handle, program);
-        // set function request parameter
-        KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
-        KCBPCLI_SetValue(handle, "bsflag", "");
-        if( ord->inst.exchange == "SSE" ){
-            KCBPCLI_SetValue(handle, "market", _SHA.c_str());
-            KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
+    KCBPCLIHANDLE handle;
+    try {
+        handle = connect_gateway();
+        if (_creditflag == "1") {  //信用账户
+            program = "420411";
+            int_request(handle, program);
+            // set function request parameter
+            KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
+            if (ord->inst.exchange == "SSE") {
+                KCBPCLI_SetValue(handle, "market", _SHA.c_str());
+                KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
+            }
+            else if (ord->inst.exchange == "SZSE") {
+                KCBPCLI_SetValue(handle, "market", _SZA.c_str());
+                KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
+            }
+            KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
+            KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice, 10).c_str());
+            KCBPCLI_SetValue(handle, "qty", IntToString((int) ord->ordQty).c_str());
+            std::string bsflag;
+            if (ord->side == "LendBuy" || ord->side == "SellRepayment" || ord->side == "Repayment") {
+                KCBPCLI_SetValue(handle, "credittype", "1"); //融资交易
+            }
+            else if (ord->side == "BorrowSell" || ord->side == "BuyGiveBack" || ord->side == "GiveBack") {
+                KCBPCLI_SetValue(handle, "credittype", "2"); //融券交易
+            }
+            else {
+                KCBPCLI_SetValue(handle, "credittype", "0"); //普通交易
+            }
+            if (ord->side == "Buy" || ord->side == "LendBuy" || ord->side == "BuyGiveBack") {
+                if (ord->type == "Limit") {
+                    bsflag = "B";
+                }
+                else if (ord->type == "Market0") {
+                    bsflag = "a";
+                }
+                else if (ord->type == "Market1") {
+                    bsflag = "b";
+                }
+                else if (ord->type == "Market3") {
+                    bsflag = "c";
+                }
+                else if (ord->type == "Market5") {
+                    bsflag = "d";
+                }
+                else if (ord->type == "Market") {
+                    bsflag = "e";
+                }
+                else {
+                    bsflag = "B";
+                }
+            }
+            else if (ord->side == "Sell" || ord->side == "SellRepayment") {
+                if (ord->type == "Limit") {
+                    bsflag = "S";
+                }
+                else if (ord->type == "Market0") {
+                    bsflag = "f";
+                }
+                else if (ord->type == "Market1") {
+                    bsflag = "g";
+                }
+                else if (ord->type == "Market3") {
+                    bsflag = "h";
+                }
+                else if (ord->type == "Market5") {
+                    bsflag = "i";
+                }
+                else if (ord->type == "Market") {
+                    bsflag = "j";
+                }
+                else {
+                    bsflag = "S";
+                }
+            }
+            else if (ord->side == "BorrowSell") {
+                if (ord->type == "Limit") {
+                    bsflag = "S";
+                }
+            }
+            KCBPCLI_SetValue(handle, "bsflag", bsflag.c_str());
         }
-        else if(ord->inst.exchange == "SZSE"){
-            KCBPCLI_SetValue(handle, "market", _SZA.c_str());
-            KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
-        }
-        KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
-        KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice,10).c_str());
-        KCBPCLI_SetValue(handle, "qty", IntToString((int)ord->ordQty).c_str());
-        if(ord->side == "LendBuy" || ord->side == "SellRepayment" || ord->side == "Repayment"){
-            KCBPCLI_SetValue(handle, "credittype", "1"); //融资交易
-        }
-        else if(ord->side == "BorrowSell" || ord->side == "BuyGiveBack" || ord->side == "GiveBack"){
-            KCBPCLI_SetValue(handle, "credittype", "2"); //融券交易
-        }
-        else{
-            KCBPCLI_SetValue(handle, "credittype", "0"); //普通交易
+        else { //普通账户
+            program = "410411";
+            int_request(handle, program);
+            // set function request parameter
+            KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
+            std::string bsflag;
+            if (ord->side == "Buy") {
+                if (ord->type == "Limit") {
+                    bsflag = "B";
+                }
+                else if (ord->type == "Market0") {
+                    bsflag = "a";
+                }
+                else if (ord->type == "Market1") {
+                    bsflag = "b";
+                }
+                else if (ord->type == "Market3") {
+                    bsflag = "c";
+                }
+                else if (ord->type == "Market5") {
+                    bsflag = "d";
+                }
+                else if (ord->type == "Market") {
+                    bsflag = "e";
+                }
+                else {
+                    bsflag = "B";
+                }
+            }
+            else if (ord->side == "Sell") {
+                if (ord->type == "Limit") {
+                    bsflag = "S";
+                }
+                else if (ord->type == "Market0") {
+                    bsflag = "f";
+                }
+                else if (ord->type == "Market1") {
+                    bsflag = "g";
+                }
+                else if (ord->type == "Market3") {
+                    bsflag = "h";
+                }
+                else if (ord->type == "Market5") {
+                    bsflag = "i";
+                }
+                else if (ord->type == "Market") {
+                    bsflag = "j";
+                }
+                else {
+                    bsflag = "S";
+                }
+            }
+            else if (ord->side == "Subscribe") {
+                if (ord->type == "Limit") {
+                    bsflag = "1";
+                }
+            }
+            else if (ord->side == "Redeem") {
+                if (ord->type == "Limit") {
+                    bsflag = "2";
+                }
+            }
+            KCBPCLI_SetValue(handle, "bsflag", bsflag.c_str());
+            if (ord->inst.exchange == "SSE") {
+                KCBPCLI_SetValue(handle, "market", _SHA.c_str());
+                KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
+            }
+            else if (ord->inst.exchange == "SZSE") {
+                KCBPCLI_SetValue(handle, "market", _SZA.c_str());
+                KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
+            }
+            KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
+            KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice, 10).c_str());
+            KCBPCLI_SetValue(handle, "qty", IntToString((int) ord->ordQty).c_str());
+            KCBPCLI_SetValue(handle, "ordergroup", "-1");
         }
     }
-    else{ //普通账户
-        program = "410411";
-        int_request(handle, program);
-        // set function request parameter
-        KCBPCLI_SetValue(handle, "fundid", ord->account.c_str());
-        KCBPCLI_SetValue(handle, "bsflag", "");
-        if( ord->inst.exchange == "SSE" ){
-            KCBPCLI_SetValue(handle, "market", _SHA.c_str());
-            KCBPCLI_SetValue(handle, "secuid", _secuid[_SHA].c_str());
-        }
-        else if(ord->inst.exchange == "SZSE"){
-            KCBPCLI_SetValue(handle, "market", _SZA.c_str());
-            KCBPCLI_SetValue(handle, "secuid", _secuid[_SZA].c_str());
-        }
-        KCBPCLI_SetValue(handle, "stkcode", ord->inst.symbol.c_str());
-        KCBPCLI_SetValue(handle, "price", DoubleToString(ord->lmtPrice,10).c_str());
-        KCBPCLI_SetValue(handle, "qty", IntToString((int)ord->ordQty).c_str());
-        KCBPCLI_SetValue(handle, "ordergroup", "-1");
+    catch(std::exception &e){
+        ord->text = std::string("Order rejected before send it:") + e.what();
+        ord->report.ordStatus = OrderStatus::OSRejected;
+        return;
     }
     // execute request
     record_set result;
-    exec_request(handle, program, result);
+    try {
+        exec_request(handle, program, result);
+    }
+    catch(std::exception &e){
+        ord->text = std::string("Order rejected in sending:") + e.what();
+        ord->report.ordStatus = OrderStatus::OSRejected;
+        return;
+    }
     disconnect_gateway(handle);
     // process answer
     result.show_data();
     //获得委托号
+    try {
+        ord->ordId = result.get_field_value("ordersno");
+    }
+    catch(std::exception &e){
+        ord->text = std::string("Order rejected after send it:") + e.what();
+        ord->report.ordStatus = OrderStatus::OSRejected;
+        return;
+    }
     //更新状态
     ord->report.ordStatus = OrderStatus::OSPendingNew;
+    std::pair<OrderDict::iterator,bool> ret;
+    std::unique_lock<std::mutex> lck(_mtx_all_orders);
+    ret = _working_orders.insert(std::pair<std::string, OrderPtr>(ord->ordId,ord));
+    if (!ret.second) {
+        //委托号已经存在，可能出现重复位委托号，覆盖旧的委托
+        ord->text = "Replaced an old order with the same ordId.";
+        _working_orders[ord->ordId] = ord;
+    }
 }
+
+void ImpTradeSession::clear_all_orders(void) {
+    std::unique_lock<std::mutex> lck(_mtx_all_orders);
+    while(!_no_exec_orders.empty()) {
+        TradeAPI::OrderPtr &ord = _no_exec_orders.front();
+        _no_exec_orders.pop();
+    }
+    _working_orders.clear();
+}
+
+void ImpTradeSession::exec_del_order(TradeAPI::OrderPtr &ord) {
+
+}
+
+
+
+
 
 
 
